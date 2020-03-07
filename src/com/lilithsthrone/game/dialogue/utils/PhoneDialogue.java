@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,10 +19,11 @@ import com.lilithsthrone.game.character.attributes.IntelligenceLevel;
 import com.lilithsthrone.game.character.attributes.PhysiqueLevel;
 import com.lilithsthrone.game.character.body.Body;
 import com.lilithsthrone.game.character.body.CoverableArea;
-import com.lilithsthrone.game.character.body.types.PenisType;
 import com.lilithsthrone.game.character.body.types.VaginaType;
 import com.lilithsthrone.game.character.body.valueEnums.BreastShape;
+import com.lilithsthrone.game.character.body.valueEnums.Capacity;
 import com.lilithsthrone.game.character.body.valueEnums.Femininity;
+import com.lilithsthrone.game.character.body.valueEnums.OrificeDepth;
 import com.lilithsthrone.game.character.effects.PerkManager;
 import com.lilithsthrone.game.character.effects.StatusEffect;
 import com.lilithsthrone.game.character.fetishes.Fetish;
@@ -244,7 +246,7 @@ public class PhoneDialogue {
 					return new Response("Loiter", "You can only loiter to pass the time when in a safe area!", null);
 				}
 				if(!Main.game.getPlayerCell().getType().isLoiteringEnabled()) {
-					return new Response("Loiter", "This is not a suitable place in which to loitering about for four hours!", null);
+					return new Response("Loiter", "This is not a suitable place in which to loiter about for four hours!", null);
 				}
 				return new ResponseEffectsOnly("Loiter", "Loiter in this area for the next four hours.") {
 					@Override
@@ -281,7 +283,7 @@ public class PhoneDialogue {
 		}
 	};
 	
-	public static final DialogueNode AFTER_MASTURBATION = new DialogueNode("Finished", "You've had enough of maturbating for now.", true) {
+	public static final DialogueNode AFTER_MASTURBATION = new DialogueNode("Finished", "You've had enough of masturbating for now.", true) {
 
 		@Override
 		public String getContent() {
@@ -347,9 +349,12 @@ public class PhoneDialogue {
 				return new Response("Main quests", "View your progress on the main quest.", null);
 				
 			} else if (index == 2) {
-				return new Response((Main.game.getPlayer().isSideQuestUpdated()
-						?"<span style='color:" + Colour.GENERIC_EXCELLENT.toWebHexString() + ";'>Side quests</span>"
-						:"Side quests"), "View your side quests.", PLANNER_SIDE){
+				return new Response(
+						(Main.game.getPlayer().isSideQuestUpdated()
+							?"<span style='color:" + Colour.GENERIC_EXCELLENT.toWebHexString() + ";'>Side quests</span>"
+							:"Side quests"),
+						"View your side quests.",
+						PLANNER_SIDE){
 					@Override
 					public void effects() {
 						Main.game.getPlayer().setSideQuestUpdated(false);
@@ -357,9 +362,12 @@ public class PhoneDialogue {
 				};
 				
 			} else if (index == 3) {
-				return new Response((Main.game.getPlayer().isRelationshipQuestUpdated()
-						?"<span style='color:" + Colour.GENERIC_EXCELLENT.toWebHexString() + ";'>Relationship quests</span>"
-						:"Relationship quests"), "View your relationship quests.", PLANNER_RELATIONSHIP){
+				return new Response(
+						(Main.game.getPlayer().isRelationshipQuestUpdated()
+							?"<span style='color:" + Colour.GENERIC_EXCELLENT.toWebHexString() + ";'>Romance quests</span>"
+							:"Romance quests"),
+						"View your romance quests.",
+						PLANNER_RELATIONSHIP){
 					@Override
 					public void effects() {
 						Main.game.getPlayer().setRelationshipQuestUpdated(false);
@@ -423,6 +431,20 @@ public class PhoneDialogue {
 					journalSB.append("</details>");
 				}
 			}
+			for(Entry<QuestLine, Quest> questsFailed : Main.game.getPlayer().getQuestsFailed().entrySet()) {
+				if(questsFailed.getKey().getType()==QuestType.SIDE) {
+					sideQuestsFound = true;
+					
+					journalSB.append(
+							"<details open>"
+								+ "<summary class='quest-title' style='color:" + Colour.GENERIC_BAD.toWebHexString() + ";'>"
+									+ "Failed - "+questsFailed.getKey().getName()
+								+ "</summary>");
+					journalSB.append(getQuestBoxDiv(questsFailed.getValue(), false));
+					
+					journalSB.append("</details>");
+				}
+			}
 			
 			if(!sideQuestsFound) {
 				journalSB.append("<div class='subTitle'>You haven't got any side quests!</div>");
@@ -438,9 +460,12 @@ public class PhoneDialogue {
 			} else if (index == 2) {
 				return new Response("Side quests", "View your side quests.", null);
 			} else if (index == 3) {
-				return new Response((Main.game.getPlayer().isRelationshipQuestUpdated()
-						?"<span style='color:" + Colour.GENERIC_EXCELLENT.toWebHexString() + ";'>Relationship quests</span>"
-						:"Relationship quests"), "View your relationship quests.", PLANNER_RELATIONSHIP){
+				return new Response(
+						(Main.game.getPlayer().isRelationshipQuestUpdated()
+						?"<span style='color:" + Colour.GENERIC_EXCELLENT.toWebHexString() + ";'>Romance quests</span>"
+							:"Romance quests"),
+							"View your romance quests.",
+						PLANNER_RELATIONSHIP){
 					@Override
 					public void effects() {
 						Main.game.getPlayer().setRelationshipQuestUpdated(false);
@@ -503,9 +528,23 @@ public class PhoneDialogue {
 					journalSB.append("</details>");
 				}
 			}
+			for(Entry<QuestLine, Quest> questsFailed : Main.game.getPlayer().getQuestsFailed().entrySet()) {
+				if(questsFailed.getKey().getType()==QuestType.RELATIONSHIP) {
+					relationshipQuestFound = true;
+					
+					journalSB.append(
+							"<details open>"
+								+ "<summary class='quest-title' style='color:" + Colour.GENERIC_BAD.toWebHexString() + ";'>"
+									+ "Failed - "+questsFailed.getKey().getName()
+								+ "</summary>");
+					journalSB.append(getQuestBoxDiv(questsFailed.getValue(), false));
+					
+					journalSB.append("</details>");
+				}
+			}
 			
 			if(!relationshipQuestFound) {
-				journalSB.append("<div class='subTitle'>You haven't got any relationship quests!</div>");
+				journalSB.append("<div class='subTitle'>You haven't got any romance quests!</div>");
 			}
 
 			return journalSB.toString();
@@ -525,7 +564,7 @@ public class PhoneDialogue {
 					}
 				};
 			} else if (index == 3) {
-				return new Response("Relationship quests", "View your relationship quests.", null);
+				return new Response("Romance quests", "View your romance quests.", null);
 			} else if (index == 0) {
 				return new Response("Back", "Return to the phone's main menu.", MENU);
 			} else {
@@ -800,209 +839,325 @@ public class PhoneDialogue {
 		boolean knowsVagina = character.isAreaKnownByCharacter(CoverableArea.VAGINA, Main.game.getPlayer());
 		boolean knowsAnus = character.isAreaKnownByCharacter(CoverableArea.ANUS, Main.game.getPlayer());
 		
-		return "<h6 style='color:"+Colour.TRANSFORMATION_GENERIC.toWebHexString()+"; text-align:center;'>Core Attributes</h6>"
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("<div class='container-full-width' style='margin-bottom:0;'>");
+		rowCount = 0;
+		
+		sb.append(statRowHeader(Colour.TRANSFORMATION_GENERIC, "Body Attributes")
 				+ statHeader()
 				+ statRow(Colour.ANDROGYNOUS, "Femininity",
 						Colour.TEXT, String.valueOf(character.getFemininityValue()),
-						character.getFemininity().getColour(), Util.capitaliseSentence(character.getFemininity().getName(false)),
-						true)
+						character.getFemininity().getColour(), Util.capitaliseSentence(character.getFemininity().getName(false)))
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Height",
 						Colour.TEXT, Units.size(character.getHeightValue()),
-						character.getHeight().getColour(), Util.capitaliseSentence(character.getHeight().getDescriptor()),
-						false)
+						character.getHeight().getColour(), Util.capitaliseSentence(character.getHeight().getDescriptor()))
 				+ statRow(Colour.MUSCLE_THREE, "Muscle Definition",
 						Colour.TEXT, String.valueOf(character.getMuscleValue()),
-						character.getMuscle().getColour(), Util.capitaliseSentence(character.getMuscle().getName(false)),
-						true)
+						character.getMuscle().getColour(), Util.capitaliseSentence(character.getMuscle().getName(false)))
 				+ statRow(Colour.BODY_SIZE_THREE, "Body Size",
 						Colour.TEXT, String.valueOf(character.getBodySizeValue()),
-						character.getBodySize().getColour(), Util.capitaliseSentence(character.getBodySize().getName(false)),
-						false)
+						character.getBodySize().getColour(), Util.capitaliseSentence(character.getBodySize().getName(false)))
 				+ statRow(character.getBodyShape().toWebHexStringColour(), "Body Shape",
 						Colour.TEXT,
 						"<b style='color:"+character.getMuscle().getColour().toWebHexString()+";'>"+character.getMuscleValue()+"</b>"
 								+ " <b>|</b> <b style='color:"+character.getBodySize().getColour().toWebHexString()+";'>"+character.getBodySizeValue()+"</b>",
-						character.getBodyShape().toWebHexStringColour(), Util.capitaliseSentence(character.getBodyShape().getName(false)),
-						true)
+						character.getBodyShape().toWebHexStringColour(), Util.capitaliseSentence(character.getBodyShape().getName(false))));
 
-				+ "<span style='height:16px;width:100%;float:left;'></span>"
-				+ "<h6 style='color:"+Colour.TRANSFORMATION_GREATER.toWebHexString()+"; text-align:center;'>Head & Throat Attributes</h6>"
-//				+ statHeader()
+		sb.append("<span style='height:16px;width:100%;float:left;'></span>");
+		rowCount = 0;
+		
+		if(character.hasTail()) {
+			if(Main.game.isPenetrationLimitationsEnabled()) {
+				sb.append(statRowHeader(Colour.TRANSFORMATION_GENERIC, "Tail Attributes")
+						+ statRow(Colour.TRANSFORMATION_GENERIC, "Length | Used for penetration",
+							Colour.TEXT, Units.size(character.getTailLength(false))+" | "+Units.size(character.getTailLength(true)),
+							Colour.GENERIC_SEX, "N/A"));
+			} else {
+				sb.append(statRowHeader(Colour.TRANSFORMATION_GENERIC, "Tail Attributes")
+						+ statRow(Colour.TRANSFORMATION_GENERIC, "Length",
+							Colour.TEXT, Units.size(character.getTailLength(false)),
+							Colour.GENERIC_SEX, "N/A"));
+			}
+			sb.append(
+					statRow(Colour.TRANSFORMATION_GENERIC,
+						"Diameter at lengths",
+						Colour.TEXT,
+						"[style.colourSize4("+Units.size(character.getTailDiameter(0))+")]"
+							+"<br/>[style.colourSize3("+Units.size(character.getTailDiameter(character.getTailLength(false)*0.33f))+")]"
+							+"<br/>[style.colourSize2("+Units.size(character.getTailDiameter(character.getTailLength(false)*0.66f))+")]"
+							+"<br/>[style.colourSize1("+Units.size(character.getTailDiameter(character.getTailLength(false)))+")]",
+						Colour.TRANSFORMATION_GENERIC,
+						"[style.colourSize4(Base)]"
+							+ "<br/>[style.colourSize3(33%)]"
+							+ "<br/>[style.colourSize2(66%)]"
+							+ "<br/>[style.colourSize1(Tip)]")
+					+ statRow(Colour.TRANSFORMATION_GENERIC,
+							"Circumference at lengths",
+							Colour.TEXT,
+							"[style.colourSize4("+Units.size(character.getTailCircumference(0))+")]"
+								+"<br/>[style.colourSize3("+Units.size(character.getTailCircumference(character.getTailLength(false)*0.33f))+")]"
+								+"<br/>[style.colourSize2("+Units.size(character.getTailCircumference(character.getTailLength(false)*0.66f))+")]"
+								+"<br/>[style.colourSize1("+Units.size(character.getTailCircumference(character.getTailLength(false)))+")]",
+							Colour.TRANSFORMATION_GENERIC,
+							"[style.colourSize4(Base)]"
+								+ "<br/>[style.colourSize3(33%)]"
+								+ "<br/>[style.colourSize2(66%)]"
+								+ "<br/>[style.colourSize1(Tip)]"));
+			
+		} else {
+			sb.append(statRowHeader(Colour.TRANSFORMATION_GENERIC, "Tail Attributes")
+					+ statRow(Colour.TEXT, UtilText.parse(character, "[npc.NameHasFull] no tail...")));
+		}
+
+		
+		sb.append("<span style='height:16px;width:100%;float:left;'></span>");
+		rowCount = 0;
+		
+		sb.append(statRowHeader(Colour.TRANSFORMATION_GREATER, "Head & Throat Attributes")
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Hair Length",
 						Colour.TEXT, Units.size(character.getHairRawLengthValue()),
-						character.getHairLength().getColour(), Util.capitaliseSentence(character.getHairLength().getDescriptor()),
-						true)
-				+ statRow(Colour.TRANSFORMATION_GENERIC, "Tongue length",
+						character.getHairLength().getColour(), Util.capitaliseSentence(character.getHairLength().getDescriptor()))
+				+ statRow(Colour.TRANSFORMATION_GENERIC, "Tongue Length",
 						Colour.TEXT, Units.size(character.getTongueLengthValue()),
-						Colour.TRANSFORMATION_GENERIC, Util.capitaliseSentence(character.getTongueLength().getDescriptor()),
-						false)
+						Colour.TRANSFORMATION_GENERIC, Util.capitaliseSentence(character.getTongueLength().getDescriptor()))
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Throat Wetness",
 						Colour.TEXT, String.valueOf(character.getFaceWetness().getValue()),
-						Colour.GENERIC_SEX, Util.capitaliseSentence(character.getFaceWetness().getDescriptor()),
-						true)
-				+ statRow(Colour.TRANSFORMATION_GENERIC, "Throat Capacity",
-						Colour.TEXT, Units.size(character.getFaceRawCapacityValue()),
-						Colour.GENERIC_SEX, Util.capitaliseSentence(character.getFaceCapacity().getDescriptor()),
-						false)
+						Colour.GENERIC_SEX, Util.capitaliseSentence(character.getFaceWetness().getDescriptor()))
+				+ statRow(Colour.TRANSFORMATION_GENERIC, "Throat Capacity Diameter",
+						Colour.TEXT, Units.size(character.getFaceRawCapacityValue()), //TODO
+						Colour.GENERIC_SEX, Util.capitaliseSentence(character.getFaceCapacity().getDescriptor()))
+				+ statRow(Colour.TRANSFORMATION_GENERIC, "Throat Depth",
+						Colour.TEXT, String.valueOf(character.getFaceDepth().getValue()),
+						Colour.GENERIC_SEX, Util.capitaliseSentence(character.getFaceDepth().getDescriptor()) + " ("+(Math.round(character.getFaceDepth().getDepthPercentage()*100))+"%)")
+				+ (Main.game.isPenetrationLimitationsEnabled()
+					?statRow(Colour.TRANSFORMATION_GENERIC, "Comfortable Throat Depth Limit",
+						Colour.GENERIC_MINOR_GOOD, Units.size(character.getFaceMaximumPenetrationDepthComfortable()),
+						Colour.TEXT, "N/A")
+					:"")
+				+ (Main.game.isPenetrationLimitationsEnabled()
+					?statRow(Colour.TRANSFORMATION_GENERIC, "Uncomfortable Throat Depth Limit",
+						Colour.GENERIC_MINOR_BAD, !character.getBodyMaterial().isOrificesLimitedDepth()?"No limit":Units.size(character.getFaceMaximumPenetrationDepthUncomfortable()),
+						Colour.TEXT, "N/A")
+					:"")
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Throat Elasticity",
 						Colour.TEXT, String.valueOf(character.getFaceElasticity().getValue()),
-						Colour.GENERIC_SEX, Util.capitaliseSentence(character.getFaceElasticity().getDescriptor()),
-						true)
+						Colour.GENERIC_SEX, Util.capitaliseSentence(character.getFaceElasticity().getDescriptor()))
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Throat Plasticity",
 						Colour.TEXT, String.valueOf(character.getFacePlasticity().getValue()),
-						Colour.GENERIC_SEX, Util.capitaliseSentence(character.getFacePlasticity().getDescriptor()),
-						false)
+						Colour.GENERIC_SEX, Util.capitaliseSentence(character.getFacePlasticity().getDescriptor())));
 				
-				+ "<span style='height:16px;width:100%;float:left;'></span>"
-				+ "<h6 style='color:"+Colour.TRANSFORMATION_SEXUAL.toWebHexString()+"; text-align:center;'>Breast Attributes</h6>"
-//				+ statHeader()
+		sb.append("<span style='height:16px;width:100%;float:left;'></span>");
+		rowCount = 0;
+		
+		sb.append(statRowHeader(Colour.TRANSFORMATION_SEXUAL, "Breast Attributes")
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Cup Size",
 						Colour.TEXT, String.valueOf(character.getBreastRawSizeValue()),
-						Colour.GENERIC_SEX, Util.capitaliseSentence(character.getBreastSize().getCupSizeName()),
-						true)
+						Colour.GENERIC_SEX, Util.capitaliseSentence(character.getBreastSize().getCupSizeName()))
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Count",
 						Colour.TEXT, String.valueOf(character.getBreastRows()),
-						Colour.GENERIC_SEX, Util.capitaliseSentence(Util.capitaliseSentence(Util.intToString(character.getBreastRows()))+" pair"+(character.getBreastRows()==1?"":"s")),
-						false)
+						Colour.GENERIC_SEX, Util.capitaliseSentence(Util.capitaliseSentence(Util.intToString(character.getBreastRows()))+" pair"+(character.getBreastRows()==1?"":"s")))
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Milk Storage",
 						Colour.TEXT, !knowsNipples?"Unknown":Units.fluid(character.getBreastRawMilkStorageValue()),
-						Colour.GENERIC_SEX, !knowsNipples?"Unknown":Util.capitaliseSentence(character.getBreastMilkStorage().getDescriptor()),
-						true)
+						Colour.GENERIC_SEX, !knowsNipples?"Unknown":Util.capitaliseSentence(character.getBreastMilkStorage().getDescriptor()))
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Milk Regeneration Per Breast",
 						Colour.TEXT, !knowsNipples?"Unknown":Units.fluid(character.getLactationRegenerationPerSecond(false)*60)+"/minute",
-						Colour.GENERIC_SEX, !knowsNipples?"Unknown":Util.capitaliseSentence(character.getBreastLactationRegeneration().getName()),
-						false)
+						Colour.GENERIC_SEX, !knowsNipples?"Unknown":Util.capitaliseSentence(character.getBreastLactationRegeneration().getName()))
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Milk Regeneration Total",
 						Colour.TEXT, !knowsNipples?"Unknown":Units.fluid(character.getLactationRegenerationPerSecond(true)*60)+"/minute",
-						Colour.GENERIC_SEX, !knowsNipples?"Unknown":Util.capitaliseSentence(character.getBreastLactationRegeneration().getName()),
-						true)
+						Colour.GENERIC_SEX, !knowsNipples?"Unknown":Util.capitaliseSentence(character.getBreastLactationRegeneration().getName()))
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Capacity",
 						Colour.TEXT, !knowsNipples?"Unknown":Units.size(character.getNippleRawCapacityValue()),
-						Colour.GENERIC_SEX, !knowsNipples?"Unknown":Util.capitaliseSentence(character.getNippleCapacity().getDescriptor()),
-						false)
+						Colour.GENERIC_SEX, !knowsNipples?"Unknown":Util.capitaliseSentence(character.getNippleCapacity().getDescriptor()))
+				+ (Main.game.isPenetrationLimitationsEnabled() && character.getNippleRawCapacityValue()>0
+					?statRow(Colour.TRANSFORMATION_GENERIC, "Nipple Depth",
+						Colour.TEXT, String.valueOf(character.getNippleDepth().getValue()),
+						Colour.GENERIC_SEX, Util.capitaliseSentence(character.getNippleDepth().getDescriptor()) + " ("+(Math.round(character.getNippleDepth().getDepthPercentage()*100))+"%)")
+					:"")
+				+ (Main.game.isPenetrationLimitationsEnabled() && character.getNippleRawCapacityValue()>0
+					?statRow(Colour.TRANSFORMATION_GENERIC, "Comfortable Nipple Depth Limit",
+						Colour.GENERIC_MINOR_GOOD, (!knowsNipples?"Unknown":Units.size(character.getNippleMaximumPenetrationDepthComfortable())),
+						Colour.TEXT, "N/A")
+					:"")
+				+ (Main.game.isPenetrationLimitationsEnabled() && character.getNippleRawCapacityValue()>0
+					?statRow(Colour.TRANSFORMATION_GENERIC, "Uncomfortable Nipple Depth Limit",
+						Colour.GENERIC_MINOR_BAD, !character.getBodyMaterial().isOrificesLimitedDepth()?"No limit":(!knowsNipples?"Unknown":Units.size(character.getNippleMaximumPenetrationDepthUncomfortable())),
+						Colour.TEXT, "N/A")
+					:"")
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Elasticity",
 						Colour.TEXT, !knowsNipples?"Unknown":String.valueOf(character.getNippleElasticity().getValue()),
-						Colour.GENERIC_SEX, !knowsNipples?"Unknown":Util.capitaliseSentence(character.getNippleElasticity().getDescriptor()),
-						true)
+						Colour.GENERIC_SEX, !knowsNipples?"Unknown":Util.capitaliseSentence(character.getNippleElasticity().getDescriptor()))
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Plasticity",
 						Colour.TEXT, !knowsNipples?"Unknown":String.valueOf(character.getNipplePlasticity().getValue()),
-						Colour.GENERIC_SEX, !knowsNipples?"Unknown":Util.capitaliseSentence(character.getNipplePlasticity().getDescriptor()),
-						false)
-				
-				+ (character.hasBreastsCrotch()
-						?"<span style='height:16px;width:100%;float:left;'></span>"
-							+ "<h6 style='color:"+Colour.TRANSFORMATION_SEXUAL.toWebHexString()+"; text-align:center;'>"+(character.getBreastCrotchShape()==BreastShape.UDDERS?"Udders":"Crotch-boobs")+" Attributes</h6>"
-							+ statRow(Colour.TRANSFORMATION_GENERIC, "Size",
-									Colour.TEXT, !character.isBreastsCrotchVisibleThroughClothing()&&!knowsCrotchNipples?"Unknown":String.valueOf(character.getBreastCrotchRawSizeValue()),
-									Colour.GENERIC_SEX,
-									!character.isBreastsCrotchVisibleThroughClothing()&&!knowsCrotchNipples
-										?"Unknown"
-										:(character.getBreastCrotchShape()==BreastShape.UDDERS
-											?Util.capitaliseSentence(character.getBreastCrotchSize().getDescriptor())
-											:Util.capitaliseSentence(character.getBreastCrotchSize().getCupSizeName())),
-									true)
-							+ statRow(Colour.TRANSFORMATION_GENERIC, "Count",
-									Colour.TEXT, !knowsCrotchNipples?"Unknown":String.valueOf(character.getBreastCrotchRows()),
-									Colour.GENERIC_SEX, !knowsCrotchNipples?"Unknown":Util.capitaliseSentence(Util.intToString(character.getBreastCrotchRows()))+" pair"+(character.getBreastCrotchRows()==1?"":"s"),
-									false)
-							+ statRow(Colour.TRANSFORMATION_GENERIC, "Milk Storage",
-									Colour.TEXT, !knowsCrotchNipples?"Unknown":Units.fluid(character.getBreastCrotchRawMilkStorageValue()),
-									Colour.GENERIC_SEX, !knowsCrotchNipples?"Unknown":Util.capitaliseSentence(character.getBreastCrotchMilkStorage().getDescriptor()),
-									true)
-							+ statRow(Colour.TRANSFORMATION_GENERIC, "Milk Regeneration Per Crotch-boob",
-									Colour.TEXT, !knowsCrotchNipples?"Unknown":Units.fluid(character.getCrotchLactationRegenerationPerSecond(false)*60)+"/minute",
-									Colour.GENERIC_SEX, !knowsCrotchNipples?"Unknown":Util.capitaliseSentence(character.getBreastCrotchLactationRegeneration().getName()),
-									false)
-							+ statRow(Colour.TRANSFORMATION_GENERIC, "Milk Regeneration Total",
-									Colour.TEXT, !knowsCrotchNipples?"Unknown":Units.fluid(character.getCrotchLactationRegenerationPerSecond(true)*60)+"/minute",
-									Colour.GENERIC_SEX, !knowsCrotchNipples?"Unknown":Util.capitaliseSentence(character.getBreastCrotchLactationRegeneration().getName()),
-									true)
-							+ statRow(Colour.TRANSFORMATION_GENERIC, "Capacity (inches)",
-									Colour.TEXT, !knowsCrotchNipples?"Unknown":String.valueOf(character.getNippleCrotchRawCapacityValue()),
-									Colour.GENERIC_SEX, !knowsCrotchNipples?"Unknown":Util.capitaliseSentence(character.getNippleCrotchCapacity().getDescriptor()),
-									false)
-							+ statRow(Colour.TRANSFORMATION_GENERIC, "Elasticity",
-									Colour.TEXT, !knowsCrotchNipples?"Unknown":String.valueOf(character.getNippleCrotchElasticity().getValue()),
-									Colour.GENERIC_SEX, !knowsCrotchNipples?"Unknown":Util.capitaliseSentence(character.getNippleCrotchElasticity().getDescriptor()),
-									true)
-							+ statRow(Colour.TRANSFORMATION_GENERIC, "Plasticity",
-									Colour.TEXT, !knowsCrotchNipples?"Unknown":String.valueOf(character.getNippleCrotchPlasticity().getValue()),
-									Colour.GENERIC_SEX, !knowsCrotchNipples?"Unknown":Util.capitaliseSentence(character.getNippleCrotchPlasticity().getDescriptor()),
-									false)
-						:"")
-				
-				+ "<span style='height:16px;width:100%;float:left;'></span>"
-				+ "<h6 style='color:"+Colour.TRANSFORMATION_SEXUAL.toWebHexString()+"; text-align:center;'>Penis Attributes</h6>"
-//				+ statHeader()
-				+ statRow(Colour.TRANSFORMATION_GENERIC, "Penis Size",
-						Colour.TEXT, !knowsPenis?"Unknown":(character.getPenisType() == PenisType.NONE ? "N/A" : Units.size(character.getPenisRawSizeValue())),
-						Colour.GENERIC_SEX, !knowsPenis?"Unknown":(character.getPenisType() == PenisType.NONE ? "N/A" : Util.capitaliseSentence(character.getPenisSize().getDescriptor())),
-						true)
+						Colour.GENERIC_SEX, !knowsNipples?"Unknown":Util.capitaliseSentence(character.getNipplePlasticity().getDescriptor())));
+		
+		if(character.hasBreastsCrotch()) {
+			sb.append("<span style='height:16px;width:100%;float:left;'></span>");
+			rowCount = 0;
+			
+			sb.append(statRowHeader(Colour.TRANSFORMATION_SEXUAL, (character.getBreastCrotchShape()==BreastShape.UDDERS?"Udders":"Crotch-boobs"))
+						+ statRow(Colour.TRANSFORMATION_GENERIC, "Size",
+								Colour.TEXT, !character.isBreastsCrotchVisibleThroughClothing()&&!knowsCrotchNipples?"Unknown":String.valueOf(character.getBreastCrotchRawSizeValue()),
+								Colour.GENERIC_SEX,
+								!character.isBreastsCrotchVisibleThroughClothing()&&!knowsCrotchNipples
+									?"Unknown"
+									:(character.getBreastCrotchShape()==BreastShape.UDDERS
+										?Util.capitaliseSentence(character.getBreastCrotchSize().getDescriptor())
+										:Util.capitaliseSentence(character.getBreastCrotchSize().getCupSizeName())))
+						+ statRow(Colour.TRANSFORMATION_GENERIC, "Count",
+								Colour.TEXT, !knowsCrotchNipples?"Unknown":String.valueOf(character.getBreastCrotchRows()),
+								Colour.GENERIC_SEX, !knowsCrotchNipples?"Unknown":Util.capitaliseSentence(Util.intToString(character.getBreastCrotchRows()))+" pair"+(character.getBreastCrotchRows()==1?"":"s"))
+						+ statRow(Colour.TRANSFORMATION_GENERIC, "Milk Storage",
+								Colour.TEXT, !knowsCrotchNipples?"Unknown":Units.fluid(character.getBreastCrotchRawMilkStorageValue()),
+								Colour.GENERIC_SEX, !knowsCrotchNipples?"Unknown":Util.capitaliseSentence(character.getBreastCrotchMilkStorage().getDescriptor()))
+						+ statRow(Colour.TRANSFORMATION_GENERIC, "Milk Regeneration Per Crotch-boob",
+								Colour.TEXT, !knowsCrotchNipples?"Unknown":Units.fluid(character.getCrotchLactationRegenerationPerSecond(false)*60)+"/minute",
+								Colour.GENERIC_SEX, !knowsCrotchNipples?"Unknown":Util.capitaliseSentence(character.getBreastCrotchLactationRegeneration().getName()))
+						+ statRow(Colour.TRANSFORMATION_GENERIC, "Milk Regeneration Total",
+								Colour.TEXT, !knowsCrotchNipples?"Unknown":Units.fluid(character.getCrotchLactationRegenerationPerSecond(true)*60)+"/minute",
+								Colour.GENERIC_SEX, !knowsCrotchNipples?"Unknown":Util.capitaliseSentence(character.getBreastCrotchLactationRegeneration().getName()))
+						+ statRow(Colour.TRANSFORMATION_GENERIC, "Capacity",
+								Colour.TEXT, !knowsCrotchNipples?"Unknown":String.valueOf(character.getNippleCrotchRawCapacityValue()),
+								Colour.GENERIC_SEX, !knowsCrotchNipples?"Unknown":Util.capitaliseSentence(character.getNippleCrotchCapacity().getDescriptor()))
+						+ statRow(Colour.TRANSFORMATION_GENERIC, "Nipple Depth",
+								Colour.TEXT, String.valueOf(character.getNippleCrotchDepth().getValue()),
+								Colour.GENERIC_SEX, Util.capitaliseSentence(character.getNippleCrotchDepth().getDescriptor()) + " ("+(Math.round(character.getNippleCrotchDepth().getDepthPercentage()*100))+"%)")
+						+ (Main.game.isPenetrationLimitationsEnabled() && character.getNippleCrotchRawCapacityValue()>0
+							?statRow(Colour.TRANSFORMATION_GENERIC, "Comfortable Nipple Depth Limit",
+								Colour.GENERIC_MINOR_GOOD, (!knowsCrotchNipples?"Unknown":Units.size(character.getNippleCrotchMaximumPenetrationDepthComfortable())),
+								Colour.TEXT, "N/A")
+							:"")
+						+ (Main.game.isPenetrationLimitationsEnabled() && character.getNippleCrotchRawCapacityValue()>0
+							?statRow(Colour.TRANSFORMATION_GENERIC, "Uncomfortable Nipple Depth Limit",
+								Colour.GENERIC_MINOR_BAD, !character.getBodyMaterial().isOrificesLimitedDepth()?"No limit":(!knowsCrotchNipples?"Unknown":Units.size(character.getNippleCrotchMaximumPenetrationDepthUncomfortable())),
+								Colour.TEXT, "N/A")
+							:"")
+						+ statRow(Colour.TRANSFORMATION_GENERIC, "Elasticity",
+								Colour.TEXT, !knowsCrotchNipples?"Unknown":String.valueOf(character.getNippleCrotchElasticity().getValue()),
+								Colour.GENERIC_SEX, !knowsCrotchNipples?"Unknown":Util.capitaliseSentence(character.getNippleCrotchElasticity().getDescriptor()))
+						+ statRow(Colour.TRANSFORMATION_GENERIC, "Plasticity",
+								Colour.TEXT, !knowsCrotchNipples?"Unknown":String.valueOf(character.getNippleCrotchPlasticity().getValue()),
+								Colour.GENERIC_SEX, !knowsCrotchNipples?"Unknown":Util.capitaliseSentence(character.getNippleCrotchPlasticity().getDescriptor())));
+		}
+		
+		sb.append( "<span style='height:16px;width:100%;float:left;'></span>");
+		rowCount = 0;
+		
+		if(!knowsPenis) {
+			sb.append(statRowHeader(Colour.TRANSFORMATION_SEXUAL, "Penis Attributes")
+					+ statRow(Colour.TEXT_GREY, "Unknown!"));
+			
+		} else if(character.hasPenis()) {
+			sb.append(statRowHeader(Colour.TRANSFORMATION_SEXUAL, "Penis Attributes")
+				+ statRow(Colour.TRANSFORMATION_GENERIC, "Length",
+						Colour.TEXT, (Units.size(character.getPenisRawSizeValue())),
+						Colour.GENERIC_SEX, (Util.capitaliseSentence(character.getPenisSize().getDescriptor())))
+				+ statRow(Colour.TRANSFORMATION_GENERIC, "Diameter | Circumference",
+						Colour.TEXT, (Units.size(character.getPenisDiameter())+" | "+Units.size(character.getPenisCircumference())),
+						Colour.TEXT_GREY, "N/A")
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Testicle Size",
-						Colour.TEXT, !knowsPenis?"Unknown":(character.getPenisType() == PenisType.NONE ? "N/A" : String.valueOf(character.getTesticleSize().getValue())),
-						Colour.GENERIC_SEX, !knowsPenis?"Unknown":(character.getPenisType() == PenisType.NONE ? "N/A" : Util.capitaliseSentence(character.getTesticleSize().getDescriptor())),
-						false)
+						Colour.TEXT, (String.valueOf(character.getTesticleSize().getValue())),
+						Colour.GENERIC_SEX, (Util.capitaliseSentence(character.getTesticleSize().getDescriptor())))
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Cum Storage",
-						Colour.TEXT, !knowsPenis?"Unknown":(character.getPenisType() == PenisType.NONE ? "N/A" : Units.fluid(character.getPenisRawCumStorageValue())),
-						Colour.GENERIC_SEX, !knowsPenis?"Unknown":(character.getPenisType() == PenisType.NONE ? "N/A" : Util.capitaliseSentence(character.getPenisCumStorage().getDescriptor())),
-						true)
+						Colour.TEXT, (Units.fluid(character.getPenisRawCumStorageValue())),
+						Colour.GENERIC_SEX, (Util.capitaliseSentence(character.getPenisCumStorage().getDescriptor())))
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Cum Production Pregnancy Modifier",
-						Colour.TEXT, !knowsPenis?"Unknown":(character.getPenisType() == PenisType.NONE ? "N/A" : String.valueOf(character.getPenisCumStorage().getPregnancyModifier())),
-						Colour.GENERIC_SEX, !knowsPenis?"Unknown":"N/A",
-						false)
+						Colour.TEXT, (String.valueOf(character.getPenisCumStorage().getPregnancyModifier())),
+						Colour.GENERIC_SEX, "N/A")
 				+ (Main.getProperties().hasValue(PropertyValue.cumRegenerationContent) ? statRow(Colour.TRANSFORMATION_GENERIC, "Cum Regeneration",
-						Colour.TEXT, !knowsPenis?"Unknown":Units.fluid(character.getCumRegenerationPerSecond()*60)+"/minute",
-						Colour.GENERIC_SEX, !knowsPenis?"Unknown":Util.capitaliseSentence(character.getPenisCumProductionRegeneration().getName()),
-						true)
+						Colour.TEXT, Units.fluid(character.getCumRegenerationPerSecond()*60)+"/minute",
+						Colour.GENERIC_SEX, Util.capitaliseSentence(character.getPenisCumProductionRegeneration().getName()))
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Cum Expulsion (% of stored cum)",
-						Colour.TEXT, !knowsPenis?"Unknown":String.valueOf(character.getPenisRawCumExpulsionValue()),
-						Colour.GENERIC_SEX, !knowsPenis?"Unknown":Util.capitaliseSentence(character.getPenisCumExpulsion().getDescriptor()),
-						false) : "")
-				
-				+ "<span style='height:16px;width:100%;float:left;'></span>"
-				+ "<h6 style='color:"+Colour.TRANSFORMATION_SEXUAL.toWebHexString()+"; text-align:center;'>Vagina Attributes</h6>"
-//				+ statHeader()
+						Colour.TEXT, String.valueOf(character.getPenisRawCumExpulsionValue()),
+						Colour.GENERIC_SEX, Util.capitaliseSentence(character.getPenisCumExpulsion().getDescriptor())) : ""));
+			
+		} else {
+			sb.append(statRowHeader(Colour.TRANSFORMATION_SEXUAL, "Penis Attributes")
+					+ statRow(Colour.TEXT, UtilText.parse(character, "[npc.NameHasFull] no penis...")));
+		}
+			
+		sb.append("<span style='height:16px;width:100%;float:left;'></span>");
+		rowCount = 0;
+		
+		if(!knowsVagina) {
+			sb.append(statRowHeader(Colour.TRANSFORMATION_SEXUAL, "Vagina Attributes")
+					+ statRow(Colour.TEXT_GREY, "Unknown!"));
+			
+		} else if(character.hasVagina()) {
+			sb.append(statRowHeader(Colour.TRANSFORMATION_SEXUAL, "Vagina Attributes")
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Clitoris Size",
-						Colour.TEXT, !knowsVagina?"Unknown":(character.getVaginaType() == VaginaType.NONE ? "N/A" : Units.size(character.getVaginaRawClitorisSizeValue())),
-						Colour.GENERIC_SEX, !knowsVagina?"Unknown":(character.getVaginaType() == VaginaType.NONE ? "N/A" : Util.capitaliseSentence(character.getVaginaClitorisSize().getDescriptor())),
-						true)
+						Colour.TEXT, (character.getVaginaType() == VaginaType.NONE ? "N/A" : Units.size(character.getVaginaRawClitorisSizeValue())),
+						Colour.GENERIC_SEX, (character.getVaginaType() == VaginaType.NONE ? "N/A" : Util.capitaliseSentence(character.getVaginaClitorisSize().getDescriptor())))
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Wetness",
-						Colour.TEXT, !knowsVagina?"Unknown":(character.getVaginaType() == VaginaType.NONE ? "N/A" : String.valueOf(character.getVaginaWetness().getValue())),
-						Colour.GENERIC_SEX, !knowsVagina?"Unknown":(character.getVaginaType() == VaginaType.NONE ? "N/A" : Util.capitaliseSentence(character.getVaginaWetness().getDescriptor())),
-						false)
+						Colour.TEXT, (character.getVaginaType() == VaginaType.NONE ? "N/A" : String.valueOf(character.getVaginaWetness().getValue())),
+						Colour.GENERIC_SEX, (character.getVaginaType() == VaginaType.NONE ? "N/A" : Util.capitaliseSentence(character.getVaginaWetness().getDescriptor())))
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Capacity",
-						Colour.TEXT, !knowsVagina?"Unknown":(character.getVaginaType() == VaginaType.NONE ? "N/A" : Units.size(character.getVaginaRawCapacityValue())),
-						Colour.GENERIC_SEX, !knowsVagina?"Unknown":(character.getVaginaType() == VaginaType.NONE ? "N/A" : Util.capitaliseSentence(character.getVaginaCapacity().getDescriptor())),
-						true)
+						Colour.TEXT, (character.getVaginaType() == VaginaType.NONE ? "N/A" : Units.size(character.getVaginaRawCapacityValue())),
+						Colour.GENERIC_SEX, (character.getVaginaType() == VaginaType.NONE ? "N/A" : Util.capitaliseSentence(character.getVaginaCapacity().getDescriptor())))
+				+ statRow(Colour.TRANSFORMATION_GENERIC, "Depth",
+						Colour.TEXT, String.valueOf(character.getVaginaDepth().getValue()),
+						Colour.GENERIC_SEX, Util.capitaliseSentence(character.getVaginaDepth().getDescriptor()) + " ("+(Math.round(character.getVaginaDepth().getDepthPercentage()*100))+"%)")
+				+ (Main.game.isPenetrationLimitationsEnabled()
+					?statRow(Colour.TRANSFORMATION_GENERIC, "Comfortable Depth Limit",
+						Colour.GENERIC_MINOR_GOOD, (Units.size(character.getVaginaMaximumPenetrationDepthComfortable())),
+						Colour.TEXT, "N/A")
+					:"")
+				+ (Main.game.isPenetrationLimitationsEnabled()
+					?statRow(Colour.TRANSFORMATION_GENERIC, "Uncomfortable Depth Limit",
+						Colour.GENERIC_MINOR_BAD, !character.getBodyMaterial().isOrificesLimitedDepth()?"No limit":(Units.size(character.getVaginaMaximumPenetrationDepthUncomfortable())),
+						Colour.TEXT, "N/A")
+					:"")
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Elasticity",
-						Colour.TEXT, !knowsVagina?"Unknown":(character.getVaginaType() == VaginaType.NONE ? "N/A" : String.valueOf(character.getVaginaElasticity().getValue())),
-						Colour.GENERIC_SEX, !knowsVagina?"Unknown":(character.getVaginaType() == VaginaType.NONE ? "N/A" : Util.capitaliseSentence(character.getVaginaElasticity().getDescriptor())),
-						false)
+						Colour.TEXT, (character.getVaginaType() == VaginaType.NONE ? "N/A" : String.valueOf(character.getVaginaElasticity().getValue())),
+						Colour.GENERIC_SEX, (character.getVaginaType() == VaginaType.NONE ? "N/A" : Util.capitaliseSentence(character.getVaginaElasticity().getDescriptor())))
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Plasticity",
-						Colour.TEXT, !knowsVagina?"Unknown":(character.getVaginaType() == VaginaType.NONE ? "N/A" : String.valueOf(character.getVaginaPlasticity().getValue())),
-						Colour.GENERIC_SEX, !knowsVagina?"Unknown":(character.getVaginaType() == VaginaType.NONE ? "N/A" : Util.capitaliseSentence(character.getVaginaPlasticity().getDescriptor())),
-						true)
-				
-				+ "<span style='height:16px;width:100%;float:left;'></span>"
-				+ "<h6 style='color:"+Colour.TRANSFORMATION_SEXUAL.toWebHexString()+"; text-align:center;'>Anus Attributes</h6>"
-//				+ statHeader()
+						Colour.TEXT, (character.getVaginaType() == VaginaType.NONE ? "N/A" : String.valueOf(character.getVaginaPlasticity().getValue())),
+						Colour.GENERIC_SEX, (character.getVaginaType() == VaginaType.NONE ? "N/A" : Util.capitaliseSentence(character.getVaginaPlasticity().getDescriptor()))));
+			
+		} else {
+			sb.append(statRowHeader(Colour.TRANSFORMATION_SEXUAL, "Vagina Attributes")
+					+ statRow(Colour.TEXT, UtilText.parse(character, "[npc.NameHasFull] no vagina...")));
+		}
+			
+		sb.append("<span style='height:16px;width:100%;float:left;'></span>");
+		rowCount = 0;
+
+		if(!knowsAnus) {
+			sb.append(statRowHeader(Colour.TRANSFORMATION_SEXUAL, "Anus Attributes")
+					+ statRow(Colour.TEXT_GREY, "Unknown!"));
+			
+		} else {
+			sb.append(statRowHeader(Colour.TRANSFORMATION_SEXUAL, "Anus Attributes")
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Wetness",
-						Colour.TEXT, !knowsAnus?"Unknown":String.valueOf(character.getAssWetness().getValue()),
-						Colour.GENERIC_SEX, !knowsAnus?"Unknown":Util.capitaliseSentence(character.getAssWetness().getDescriptor()),
-						true)
+						Colour.TEXT, String.valueOf(character.getAssWetness().getValue()),
+						Colour.GENERIC_SEX, Util.capitaliseSentence(character.getAssWetness().getDescriptor()))
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Capacity",
-						Colour.TEXT, !knowsAnus?"Unknown":Units.size(character.getAssRawCapacityValue()),
-						Colour.GENERIC_SEX, !knowsAnus?"Unknown":Util.capitaliseSentence(character.getAssCapacity().getDescriptor()),
-						false)
+						Colour.TEXT, Units.size(character.getAssRawCapacityValue()),
+						Colour.GENERIC_SEX, Util.capitaliseSentence(character.getAssCapacity().getDescriptor()))
+				+ statRow(Colour.TRANSFORMATION_GENERIC, "Depth",
+						Colour.TEXT, String.valueOf(character.getAssDepth().getValue()),
+						Colour.GENERIC_SEX, Util.capitaliseSentence(character.getAssDepth().getDescriptor()) + " ("+(Math.round(character.getAssDepth().getDepthPercentage()*100))+"%)")
+				+ (Main.game.isPenetrationLimitationsEnabled()
+					?statRow(Colour.TRANSFORMATION_GENERIC, "Comfortable Anus Depth Limit",
+						Colour.GENERIC_MINOR_GOOD, (Units.size(character.getAssMaximumPenetrationDepthComfortable())),
+						Colour.TEXT, "N/A")
+					:"")
+				+ (Main.game.isPenetrationLimitationsEnabled()
+					?statRow(Colour.TRANSFORMATION_GENERIC, "Uncomfortable Anus Depth Limit",
+						Colour.GENERIC_MINOR_BAD, !character.getBodyMaterial().isOrificesLimitedDepth()?"No limit":(Units.size(character.getAssMaximumPenetrationDepthUncomfortable())),
+						Colour.TEXT, "N/A")
+					:"")
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Elasticity",
-						Colour.TEXT, !knowsAnus?"Unknown":String.valueOf(character.getAssElasticity().getValue()),
-						Colour.GENERIC_SEX, !knowsAnus?"Unknown":Util.capitaliseSentence(character.getAssElasticity().getDescriptor()),
-						true)
+						Colour.TEXT, String.valueOf(character.getAssElasticity().getValue()),
+						Colour.GENERIC_SEX, Util.capitaliseSentence(character.getAssElasticity().getDescriptor()))
 				+ statRow(Colour.TRANSFORMATION_GENERIC, "Plasticity",
-						Colour.TEXT, !knowsAnus?"Unknown":String.valueOf(character.getAssPlasticity().getValue()),
-						Colour.GENERIC_SEX, !knowsAnus?"Unknown":Util.capitaliseSentence(character.getAssPlasticity().getDescriptor()),
-						false)
-				;
+						Colour.TEXT, String.valueOf(character.getAssPlasticity().getValue()),
+						Colour.GENERIC_SEX, Util.capitaliseSentence(character.getAssPlasticity().getDescriptor())));
+		}
+		
+		sb.append("</div>");
+		
+		return sb.toString();
 	}
 	
 	public static final DialogueNode CHARACTER_STATS_BODY = new DialogueNode("Body Stats", "", true) {
@@ -1016,26 +1171,41 @@ public class PhoneDialogue {
 					"<details>"
 							+ "<summary style='color:"+Colour.TRANSFORMATION_SEXUAL.toWebHexString()+"; text-align:center;'>Orifice Mechanics</summary>"
 						
-						+ "[style.boldSex(Capacity:)] An orifice's capacity determines the size of penetrative objects that can be comfortably inserted."
-							+ " Penetrative objects' girth is factored into their effective size, with girthier objects requiring higher capacities than their same-sized thinner counterparts."
-							+ " <b>Higher capacity values mean that the orifice can take larger insertions without stretching</b>."
-							+ "<br/>Capacity values range from 0 (extremely tight) to 40 (gaping wide)."
+						+ "[style.boldSex(Capacity:)] An orifice's capacity determines the maximum diameter of penises and tails that can be comfortably inserted."
+						+ " <b>Higher capacity values mean that the orifice can take thicker insertions without stretching.</b>"
+						+ "<br/>- The diameter of a penis is calculated from a combination of their 'length' and 'girth' value, with additional modifiers (such as 'flared' or 'tapered') further altering the final value."
+						+ "<br/>- The diameter of a tail is calculated from both its 'girth' value as well as the character's height."
+						+ "<br/>- Capacity diameter values range from 0 [units.sizes] (extremely tight) to [units.sizes("+Math.round(Capacity.SEVEN_GAPING.getMaximumValue(false))+")] (gaping wide)."
+						
+						+ "<br/><br/>");
+			
+			if(Main.game.isPenetrationLimitationsEnabled()) {
+				UtilText.nodeContentSB.append(
+					"[style.boldSex(Depth:)] An orifice's depth determines the maximum length of penises and tails which can be comfortably or uncomfortably inserted into it."
+						+ " <b>Higher depth values mean that longer penetrative objects can be accommodated before the character experiences discomfort.</b>"
+						+ "<br/>- Comfortable/Uncomfortable depths of an orifice are based on the height of the character, and are then modified by the orifice's 'depth' value."
+						+ "<br/>- Sexual partners who are not in the 'rough' sex-pace, and whose penises or tails are too long to be fully inserted into an orifice will stop at the limit of comfortable depth."
+						+ "<br/>- Sexual partners who are in the 'rough' sex-pace will push past the comfortable orifice depth limit, causing the character discomfort."
+						+ "<br/>- Size queens treat the 'uncomfortable' portion of orifice depth as being comfortable."
+						+ "<br/>- Slimes and elementals always have the maximum depth value for each of their orifices."
+						+ "<br/>- Depth values range from 0 ("+OrificeDepth.ZERO_EXTREMELY_SHALLOW.getDescriptor()+") to 7 ("+OrificeDepth.SEVEN_FATHOMLESS.getDescriptor()+")."
+						
+						+ "<br/><br/>");
+			}
+			
+			UtilText.nodeContentSB.append("[style.boldSex(Elasticity:)] An orifice's elasticity determines how quickly it stretches out, and also has an influence on detecting whether a penetrative object is too big for the orifice."
+						+ " If a partner's penis is too large for your orifice's capacity value, then your orifice will stretch out each turn during sex, with <b>higher elasticity values meaning that it stretches out quicker</b>."
+						+ " <b>Higher elasticity values also have an increased tolerance for objects that would normally be too large for the orifice, allowing larger objects to be inserted before stretching begins</b>."
+						+ "<br/>Elasticity values range from 0 (extremely resistant to being stretched out) to 7 (instantly stretching out)."
 						
 						+ "<br/><br/>"
 						
-						+ "[style.boldSex(Elasticity:)] An orifice's elasticity determines how quickly it stretches out, and also has an influence on detecting whether a penetrative object is too big for the orifice."
-							+ " If a partner's penis is too large for your orifice's capacity value, then your orifice will stretch out each turn during sex, with <b>higher elasticity values meaning that it stretches out quicker</b>."
-							+ " <b>Higher elasticity values also have an increased tolerance for objects that would normally be too large for the orifice, allowing larger objects to be inserted before stretching begins</b>."
-							+ "<br/>Elasticity values range from 0 (extremely resistant to being stretched out) to 7 (instantly stretching out)."
-							
-							+ "<br/><br/>"
-							
-						+ "[style.boldSex(Plasticity:)] An orifice's plasticity determines how quickly it recovers after being stretched out."
-							+ " If your orifice has been stretched out during sex, <b>higher plasticity values mean that it will recover slower, with very high values meaning that it will never recover all of its original tightness</b>."
-							+ "<br/>Plasticity values range from 0 (instantly returns to starting size after sex) to 7 (recovers none of its original size after sex)."
-				+ "</details>"
-						
-				+ getBodyStatsPanel(Main.game.getPlayer()));
+					+ "[style.boldSex(Plasticity:)] An orifice's plasticity determines how quickly it recovers after being stretched out."
+						+ " If your orifice has been stretched out during sex, <b>higher plasticity values mean that it will recover slower, with very high values meaning that it will never recover all of its original tightness</b>."
+						+ "<br/>Plasticity values range from 0 (instantly returns to starting size after sex) to 7 (recovers none of its original size after sex)."
+			+ "</details>"
+					
+			+ getBodyStatsPanel(Main.game.getPlayer()));
 			
 			return UtilText.nodeContentSB.toString();
 		}
@@ -1097,9 +1267,9 @@ public class PhoneDialogue {
 							:"")
 					
 					+ sexStatRow(Colour.AROUSAL_STAGE_ONE, "Blowjobs",
-							Main.game.getPlayer().getSexCount(new SexType(SexParticipantType.NORMAL, SexAreaPenetration.PENIS, SexAreaOrifice.MOUTH)),
-							Main.game.getPlayer().getCumCount(new SexType(SexParticipantType.NORMAL, SexAreaPenetration.PENIS, SexAreaOrifice.MOUTH)),
 							Main.game.getPlayer().getSexCount(new SexType(SexParticipantType.NORMAL, SexAreaOrifice.MOUTH, SexAreaPenetration.PENIS)),
+							Main.game.getPlayer().getCumCount(new SexType(SexParticipantType.NORMAL, SexAreaPenetration.PENIS, SexAreaOrifice.MOUTH)),
+							Main.game.getPlayer().getSexCount(new SexType(SexParticipantType.NORMAL, SexAreaPenetration.PENIS, SexAreaOrifice.MOUTH)),
 							Main.game.getPlayer().getCumCount(new SexType(SexParticipantType.NORMAL, SexAreaOrifice.MOUTH, SexAreaPenetration.PENIS)),
 							true)
 					
@@ -1599,8 +1769,15 @@ public class PhoneDialogue {
 				+ "</div>";
 	}
 
-	private static String statRow(String colourLeft, String left, Colour colourCentre, String centre, String colourRight, String right, boolean light) {
-		return "<div class='container-full-width inner' style='margin-bottom:0;"+(light?"background:"+Colour.BACKGROUND_ALT.toWebHexString()+";'":"'")+">"
+	private static String statRowHeader(Colour colour, String text) {
+		return "<h6 style='color:"+colour.toWebHexString()+"; text-align:center; margin-bottom:0; padding-bottom:0;'>"+text+"</h6>";
+	}
+	
+	private static int rowCount = 0;
+	
+	private static String statRow(String colourLeft, String left, Colour colourCentre, String centre, String colourRight, String right) {
+		rowCount++;
+		return "<div class='container-full-width inner' style='margin-bottom:0;"+(rowCount%2==0?"background:"+Colour.BACKGROUND_ALT.toWebHexString()+";'":"'")+">"
 				+ "<div style='color:"+colourLeft+"; width:40%; float:left; font-weight:bold; margin:0; padding:0;'>"
 					+ left
 				+ "</div>"
@@ -1613,20 +1790,30 @@ public class PhoneDialogue {
 			+ "</div>";
 	}
 	
-	private static String statRow(Colour colourLeft, String left, Colour colourCentre, String centre, Colour colourRight, String right, boolean light) {
-		return "<div class='container-full-width inner' style='margin-bottom:0;"+(light?"background:"+Colour.BACKGROUND_ALT.toWebHexString()+";'":"'")+">"
+	private static String statRow(Colour colourLeft, String left, Colour colourCentre, String centre, Colour colourRight, String right) {
+		rowCount++;
+		return "<div class='container-full-width inner' style='margin-bottom:0;"+(rowCount%2==0?"background:"+Colour.BACKGROUND_ALT.toWebHexString()+";'":"'")+">"
 					+ "<div style='color:"+colourLeft.toWebHexString()+"; width:40%; float:left; font-weight:bold; margin:0; padding:0;'>"
 						+ left
 					+ "</div>"
-					+ "<div style='color:"+(centre.equalsIgnoreCase("unknown")?Colour.TEXT_GREY:colourCentre).toWebHexString()+"; width:30%; float:left; font-weight:bold; margin:0; padding:0;'>"
+					+ "<div style='color:"+(centre.equalsIgnoreCase("unknown") || centre.equalsIgnoreCase("N/A")?Colour.TEXT_GREY:colourCentre).toWebHexString()+"; width:30%; float:left; font-weight:bold; margin:0; padding:0;'>"
 						+ centre
 					+ "</div>"
-					+ "<div style='color:"+(right.equalsIgnoreCase("unknown")?Colour.TEXT_GREY:colourRight).toWebHexString()+"; width:30%; float:left; font-weight:bold; margin:0; padding:0;'>"
+					+ "<div style='color:"+(right.equalsIgnoreCase("unknown") || right.equalsIgnoreCase("N/A")?Colour.TEXT_GREY:colourRight).toWebHexString()+"; width:30%; float:left; font-weight:bold; margin:0; padding:0;'>"
 						+ right
 					+ "</div>"
 				+ "</div>";
 	}
 
+	private static String statRow(Colour colour, String text) {
+		rowCount++;
+		return "<div class='container-full-width inner' style='margin-bottom:0;"+(rowCount%2==0?"background:"+Colour.BACKGROUND_ALT.toWebHexString()+";'":"'")+">"
+					+ "<div style='color:"+colour.toWebHexString()+"; width:100%; float:left; font-weight:bold; margin:0; padding:0; text-align:center;'>"
+						+ text
+					+ "</div>"
+				+ "</div>";
+	}
+	
 	private static String getAttributeBox(GameCharacter owner, Attribute att, String effect) {
 		return getAttributeBox(owner, att, effect, false);
 	}
@@ -2171,7 +2358,7 @@ public class PhoneDialogue {
 						+ "<tr>"
 							+ "<td>Penis size</td>"
 							+ "<td>-</td>"
-							+ "<td>"+Units.size(maleBody.getPenis().getRawSizeValue())+"</td>"
+							+ "<td>"+Units.size(maleBody.getPenis().getRawLengthValue())+"</td>"
 						+ "</tr>"
 						+ "<tr>"
 							+ "<td>Vagina capacity</td>"
@@ -2336,12 +2523,18 @@ public class PhoneDialogue {
 			journalSB.append(getFetishEntry(Fetish.FETISH_DOMINANT, Fetish.FETISH_SUBMISSIVE));
 			journalSB.append(getFetishEntry(Fetish.FETISH_VAGINAL_GIVING, Fetish.FETISH_VAGINAL_RECEIVING));
 			journalSB.append(getFetishEntry(Fetish.FETISH_PENIS_GIVING, Fetish.FETISH_PENIS_RECEIVING));
-			journalSB.append(getFetishEntry(Fetish.FETISH_ANAL_GIVING, Fetish.FETISH_ANAL_RECEIVING));
+			if(Main.game.isAnalContentEnabled()) {
+				journalSB.append(getFetishEntry(Fetish.FETISH_ANAL_GIVING, Fetish.FETISH_ANAL_RECEIVING));
+			}
 			journalSB.append(getFetishEntry(Fetish.FETISH_BREASTS_OTHERS, Fetish.FETISH_BREASTS_SELF));
-			journalSB.append(getFetishEntry(Fetish.FETISH_LACTATION_OTHERS, Fetish.FETISH_LACTATION_SELF));
+			if(Main.game.isLactationContentEnabled()) {
+				journalSB.append(getFetishEntry(Fetish.FETISH_LACTATION_OTHERS, Fetish.FETISH_LACTATION_SELF));
+			}
 			journalSB.append(getFetishEntry(Fetish.FETISH_ORAL_RECEIVING, Fetish.FETISH_ORAL_GIVING));
 			journalSB.append(getFetishEntry(Fetish.FETISH_LEG_LOVER, Fetish.FETISH_STRUTTER));
-			journalSB.append(getFetishEntry(Fetish.FETISH_FOOT_GIVING, Fetish.FETISH_FOOT_RECEIVING));
+			if(Main.game.isFootContentEnabled()) {
+				journalSB.append(getFetishEntry(Fetish.FETISH_FOOT_GIVING, Fetish.FETISH_FOOT_RECEIVING));
+			}
 			journalSB.append(getFetishEntry(Fetish.FETISH_CUM_STUD, Fetish.FETISH_CUM_ADDICT));
 			journalSB.append(getFetishEntry(Fetish.FETISH_DEFLOWERING, Fetish.FETISH_PURE_VIRGIN));
 			journalSB.append(getFetishEntry(Fetish.FETISH_IMPREGNATION, Fetish.FETISH_PREGNANCY));
@@ -2349,12 +2542,23 @@ public class PhoneDialogue {
 			journalSB.append(getFetishEntry(Fetish.FETISH_KINK_GIVING, Fetish.FETISH_KINK_RECEIVING));
 			journalSB.append(getFetishEntry(Fetish.FETISH_SADIST, Fetish.FETISH_MASOCHIST));
 			journalSB.append(getFetishEntry(Fetish.FETISH_NON_CON_DOM, Fetish.FETISH_NON_CON_SUB));
-
+			
 //			journalSB.append("<div class='container-full-width' style='text-align:center; font-weight:bold; margin-top:16px;'><h6>Individual Fetishes</h6></div>");
 			journalSB.append(getFetishEntry(Fetish.FETISH_DENIAL, Fetish.FETISH_DENIAL_SELF));
 			journalSB.append(getFetishEntry(Fetish.FETISH_VOYEURIST, Fetish.FETISH_EXHIBITIONIST));
 			journalSB.append(getFetishEntry(Fetish.FETISH_BIMBO, Fetish.FETISH_CROSS_DRESSER));
-			journalSB.append(getFetishEntry(Fetish.FETISH_MASTURBATION, Fetish.FETISH_INCEST));
+			if(Main.game.isIncestEnabled()) {
+				journalSB.append(getFetishEntry(Fetish.FETISH_MASTURBATION, Fetish.FETISH_INCEST));
+				if(Main.game.isPenetrationLimitationsEnabled()) {
+					journalSB.append(getFetishEntry(Fetish.FETISH_SIZE_QUEEN, null));
+				}
+			} else {
+				if(Main.game.isPenetrationLimitationsEnabled()) {
+					journalSB.append(getFetishEntry(Fetish.FETISH_MASTURBATION, Fetish.FETISH_SIZE_QUEEN));
+				} else {
+					journalSB.append(getFetishEntry(Fetish.FETISH_MASTURBATION, null));
+				}
+			}
 			
 			// Derived fetishes:
 
@@ -2407,7 +2611,7 @@ public class PhoneDialogue {
 	private static String getFetishEntry(Fetish othersFetish, Fetish selfFetish) {
 		return "<div class='container-full-width' style='background:transparent; margin:2px 0; width:100%;'>"
 					+ getIndividualFetishEntry(othersFetish)
-					+ getIndividualFetishEntry(selfFetish)
+					+ (selfFetish==null?"":getIndividualFetishEntry(selfFetish))
 				+ "</div>";
 	}
 	
@@ -2432,7 +2636,7 @@ public class PhoneDialogue {
 							? " owned' style='border:2px solid " + Colour.FETISH.toWebHexString() + ";'>"
 							: (fetish.isAvailable(Main.game.getPlayer())
 									? " unlocked' style='border:2px solid " + Colour.TEXT_GREY.toWebHexString() + ";" + "'>"
-									: " locked' style='border:2px solid " + Colour.TEXT_GREY.toWebHexString() + ";'>"))
+									: " locked' style='border:2px solid " + Colour.TEXT_GREY_DARK.toWebHexString() + ";'>"))
 										+ "<div class='fetish-icon-content'>"+fetish.getSVGString(Main.game.getPlayer())+"</div>"
 										+ "<div style='width:40%;height:40%;position:absolute;top:0;right:4px;'>"+level.getSVGImageOverlay()+"</div>"
 										+ (Main.game.getPlayer().hasFetish(fetish) // Overlay to create disabled effect:

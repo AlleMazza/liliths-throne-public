@@ -33,6 +33,7 @@ import com.lilithsthrone.game.character.body.valueEnums.OrificeElasticity;
 import com.lilithsthrone.game.character.body.valueEnums.OrificePlasticity;
 import com.lilithsthrone.game.character.body.valueEnums.TongueLength;
 import com.lilithsthrone.game.character.body.valueEnums.Wetness;
+import com.lilithsthrone.game.character.effects.Perk;
 import com.lilithsthrone.game.character.effects.PerkCategory;
 import com.lilithsthrone.game.character.effects.PerkManager;
 import com.lilithsthrone.game.character.effects.StatusEffect;
@@ -125,7 +126,6 @@ public class Roxy extends NPC {
 		}
 		if(Main.isVersionOlderThan(Game.loadingVersion, "0.3.3.6")) {
 			this.setLevel(15);
-			this.resetPerksMap(true);
 		}
 		if(Main.isVersionOlderThan(Game.loadingVersion, "0.3.5.6")) {
 			this.setPersonalityTraits(
@@ -137,10 +137,17 @@ public class Roxy extends NPC {
 			this.setEyeLiner(new Covering(BodyCoveringType.MAKEUP_EYE_LINER, Colour.COVERING_NONE));
 			this.setEyeShadow(new Covering(BodyCoveringType.MAKEUP_EYE_SHADOW, Colour.COVERING_NONE));
 		}
+		if(Main.isVersionOlderThan(Game.loadingVersion, "0.3.5.9")) {
+			this.addPersonalityTrait(PersonalityTrait.SLOVENLY);
+		}
+		if(Main.isVersionOlderThan(Game.loadingVersion, "0.3.6")) {
+			this.resetPerksMap(true);
+		}
 	}
 
 	@Override
 	public void setupPerks(boolean autoSelectPerks) {
+		this.addSpecialPerk(Perk.SPECIAL_SLUT);
 		PerkManager.initialisePerks(this,
 				Util.newArrayListOfValues(),
 				Util.newHashMapOfValues(
@@ -159,7 +166,8 @@ public class Roxy extends NPC {
 					PersonalityTrait.SELFISH,
 					PersonalityTrait.CONFIDENT,
 					PersonalityTrait.COWARDLY,
-					PersonalityTrait.LEWD);
+					PersonalityTrait.LEWD,
+					PersonalityTrait.SLOVENLY);
 			
 			this.setSexualOrientation(SexualOrientation.AMBIPHILIC);
 			
@@ -258,19 +266,19 @@ public class Roxy extends NPC {
 		this.setPiercedNose(true);
 		this.setPiercedTongue(true);
 		this.setPiercedVagina(true);
-		this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_EAR_HOOPS, Colour.CLOTHING_GOLD, false), true, this);
-		this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_LIP_RINGS, Colour.CLOTHING_GOLD, false), true, this);
-		this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_NAVEL_GEM, Colour.CLOTHING_GOLD, false), true, this);
-		this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_NIPPLE_BARS, Colour.CLOTHING_GOLD, false), true, this);
-		this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_NOSE_BASIC_RING, Colour.CLOTHING_GOLD, false), true, this);
-		this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_TONGUE_BAR, Colour.CLOTHING_GOLD, false), true, this);
-		this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_VAGINA_BARBELL_RING, Colour.CLOTHING_GOLD, false), true, this);
+		this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_ear_hoops", Colour.CLOTHING_GOLD, false), true, this);
+		this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_lip_double_ring", Colour.CLOTHING_GOLD, false), true, this);
+		this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_gemstone_barbell", Colour.CLOTHING_GOLD, false), InventorySlot.PIERCING_STOMACH, true, this);
+		this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_basic_barbell_pair", Colour.CLOTHING_GOLD, false), InventorySlot.PIERCING_NIPPLE, true, this);
+		this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_nose_ring", Colour.CLOTHING_GOLD, false), true, this);
+		this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_basic_barbell", Colour.CLOTHING_GOLD, false), InventorySlot.PIERCING_TONGUE, true, this);
+		this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_ringed_barbell", Colour.CLOTHING_GOLD, false), InventorySlot.PIERCING_VAGINA, true, this);
 
-		this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_ankle_anklet", Colour.CLOTHING_GOLD, false), true, this);
+		this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_ankle_anklet", Colour.CLOTHING_GOLD, Colour.CLOTHING_GOLD, null, false), true, this);
 		this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.WRIST_BANGLE, Colour.CLOTHING_GOLD, false), true, this);
 		this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_finger_ring", Colour.CLOTHING_GOLD, false), true, this);
 
-		this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.HEAD_HEADBAND, Colour.CLOTHING_BLACK, false), true, this);
+		this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_head_headband", Colour.CLOTHING_BLACK, false), true, this);
 		this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.EYES_PATCH, Colour.CLOTHING_BLACK, false), true, this);
 
 		this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.CHEST_FULLCUP_BRA, Colour.CLOTHING_BLACK, false), true, this);

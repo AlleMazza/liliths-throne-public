@@ -3,6 +3,7 @@ package com.lilithsthrone.game.sex;
 import com.lilithsthrone.game.character.GameCharacter;
 import com.lilithsthrone.game.character.body.CoverableArea;
 import com.lilithsthrone.game.dialogue.utils.UtilText;
+import com.lilithsthrone.main.Main;
 
 /**
  * @since 0.1.0
@@ -19,17 +20,22 @@ public enum SexAreaPenetration implements SexAreaInterface {
 			}
 			return owner.getPenisName();
 		}
-
+		@Override
+		public int getLength(GameCharacter owner, boolean penetrationLength) {
+			return owner.getPenisRawSizeValue();
+		}
+		@Override
+		public float getDiameter(GameCharacter owner, int atLength) {
+			return owner.getPenisDiameter();
+		}
 		@Override
 		public boolean isFree(GameCharacter owner) {
-			return Sex.isOrificeFree(owner, SexAreaOrifice.URETHRA_PENIS) && Sex.isPenetrationTypeFree(owner, this);
+			return Main.sex.isOrificeFree(owner, SexAreaOrifice.URETHRA_PENIS) && Main.sex.isPenetrationTypeFree(owner, this);
 		}
-
 		@Override
 		public CoverableArea getRelatedCoverableArea() {
 			return CoverableArea.PENIS;
 		}
-		
 		@Override
 		public String getSexDescription(boolean pastTense, GameCharacter performer, SexPace performerPace, GameCharacter target, SexPace targetPace, SexAreaInterface targetArea) {
 			StringBuilder sb = new StringBuilder();
@@ -658,10 +664,12 @@ public enum SexAreaPenetration implements SexAreaInterface {
 							switch(targetPace) {
 								case DOM_GENTLE:
 								case DOM_NORMAL:
-								case SUB_EAGER:
-								case SUB_NORMAL:
 								case DOM_ROUGH:
 									sb.append(" [npc2.Moaning+] in delight, [npc2.name] took great pleasure in [npc2.sexPaceVerb] riding [npc.namePos] [npc.cock+].");
+									break;
+								case SUB_EAGER:
+								case SUB_NORMAL:
+									sb.append(" [npc2.Moaning] in delight, [npc2.name] [npc2.sexPaceVerb] bucked [npc.her] hips to help drive [npc.namePos] [npc.cock+] deep into [npc2.her] [npc2.pussy+].");
 									break;
 								case SUB_RESISTING:
 									sb.append(" Although [npc2.she] cried and pleaded to be left alone, [npc2.name] [npc2.was] unable to stop [npc.name] from fucking [npc2.her] [npc2.pussy+].");
@@ -686,17 +694,18 @@ public enum SexAreaPenetration implements SexAreaInterface {
 			}
 			return owner.getClitorisName(false);
 		}
-
+		@Override
+		public int getLength(GameCharacter owner, boolean penetrationLength) {
+			return owner.getVaginaRawClitorisSizeValue();
+		}
 		@Override
 		public boolean isFree(GameCharacter owner) {
-			return Sex.isPenetrationTypeFree(owner, this);
+			return Main.sex.isPenetrationTypeFree(owner, this);
 		}
-
 		@Override
 		public CoverableArea getRelatedCoverableArea() {
 			return CoverableArea.VAGINA;
 		}
-		
 		@Override
 		public String getSexDescription(boolean pastTense, GameCharacter performer, SexPace performerPace, GameCharacter target, SexPace targetPace, SexAreaInterface targetArea) {
 			StringBuilder sb = new StringBuilder();
@@ -1158,17 +1167,18 @@ public enum SexAreaPenetration implements SexAreaInterface {
 			}
 			return owner.getTongueName();
 		}
-
+		@Override
+		public int getLength(GameCharacter owner, boolean penetrationLength) {
+			return owner.getTongueLengthValue();
+		}
 		@Override
 		public boolean isFree(GameCharacter owner) {
-			return Sex.isOrificeFree(owner, SexAreaOrifice.MOUTH) && Sex.isPenetrationTypeFree(owner, this);
+			return Main.sex.isOrificeFree(owner, SexAreaOrifice.MOUTH) && Main.sex.isPenetrationTypeFree(owner, this);
 		}
-
 		@Override
 		public CoverableArea getRelatedCoverableArea() {
 			return CoverableArea.MOUTH;
 		}
-
 		@Override
 		public String getSexDescription(boolean pastTense, GameCharacter performer, SexPace performerPace, GameCharacter target, SexPace targetPace, SexAreaInterface targetArea) {
 			StringBuilder sb = new StringBuilder();
@@ -1450,14 +1460,18 @@ public enum SexAreaPenetration implements SexAreaInterface {
 			return true;
 		}
 		@Override
+		public int getLength(GameCharacter owner, boolean penetrationLength) {
+			System.err.println("Warning: Finger length is being called!");
+			return 8;
+		}
+		@Override
 		public boolean isFree(GameCharacter owner) {
-			return Sex.isPenetrationTypeFree(owner, this);
+			return Main.sex.isPenetrationTypeFree(owner, this);
 		}
 		@Override
 		public CoverableArea getRelatedCoverableArea() {
 			return CoverableArea.NONE;
 		}
-
 		@Override
 		public String getSexDescription(boolean pastTense, GameCharacter performer, SexPace performerPace, GameCharacter target, SexPace targetPace, SexAreaInterface targetArea) {
 			StringBuilder sb = new StringBuilder();
@@ -1746,14 +1760,18 @@ public enum SexAreaPenetration implements SexAreaInterface {
 			return true;
 		}
 		@Override
+		public int getLength(GameCharacter owner, boolean penetrationLength) {
+			System.err.println("Warning: Foot length is being called!");
+			return 8;
+		}
+		@Override
 		public boolean isFree(GameCharacter owner) {
-			return Sex.isPenetrationTypeFree(owner, this);
+			return Main.sex.isPenetrationTypeFree(owner, this);
 		}
 		@Override
 		public CoverableArea getRelatedCoverableArea() {
 			return CoverableArea.FEET;
 		}
-
 		@Override
 		public String getSexDescription(boolean pastTense, GameCharacter performer, SexPace performerPace, GameCharacter target, SexPace targetPace, SexAreaInterface targetArea) {
 			StringBuilder sb = new StringBuilder();
@@ -1847,17 +1865,23 @@ public enum SexAreaPenetration implements SexAreaInterface {
 			}
 			return owner.getTailName();
 		}
-
+		@Override
+		public int getLength(GameCharacter owner, boolean penetrationLength) {
+			return owner.getTailLength(penetrationLength);
+		}
+		@Override
+		public float getDiameter(GameCharacter owner, int atLength) {
+			return owner.getTailDiameter(atLength);
+		}
 		@Override
 		public boolean isFree(GameCharacter owner) {
-			return Sex.isPenetrationTypeFree(owner, this);
+			return Main.sex.isPenetrationTypeFree(owner, this);
 		}
 
 		@Override
 		public CoverableArea getRelatedCoverableArea() {
 			return CoverableArea.NONE;
 		}
-
 		@Override
 		public String getSexDescription(boolean pastTense, GameCharacter performer, SexPace performerPace, GameCharacter target, SexPace targetPace, SexAreaInterface targetArea) {
 			StringBuilder sb = new StringBuilder();
@@ -2194,18 +2218,21 @@ public enum SexAreaPenetration implements SexAreaInterface {
 			}
 			return owner.getTentacleName(false);
 		}
-
+		@Override
+		public int getLength(GameCharacter owner, boolean penetrationLength) {
+			//TODO
+			return 8;
+//			return owner.getTentacleLength(penetrationLength);
+		}
 		@Override
 		public boolean isFree(GameCharacter owner) {
 			// TODO
 			return false;
 		}
-
 		@Override
 		public CoverableArea getRelatedCoverableArea() {
 			return CoverableArea.NONE;
 		}
-
 		@Override
 		public String getSexDescription(boolean pastTense, GameCharacter performer, SexPace performerPace, GameCharacter target, SexPace targetPace, SexAreaInterface targetArea) {
 			StringBuilder sb = new StringBuilder();
@@ -2549,6 +2576,17 @@ public enum SexAreaPenetration implements SexAreaInterface {
 	public boolean isOrifice() {
 		return false;
 	}
+	
+	public boolean appliesStretchEffects(GameCharacter owner) {
+		return getDiameter(owner, 0)!=-1;
+	}
+
+	public abstract int getLength(GameCharacter owner, boolean penetrationLength);
+
+	/** The diameter of the owner's SexAreaPenetration at the length specified, measured from the base. Diameter is the unit of measurement for all Capacity values. */
+	public float getDiameter(GameCharacter owner, int atLength) {
+		return -1;
+	};
 	
 	public float getBaseArousalWhenPenetrating() {
 		return baseArousalWhenPenetrating;

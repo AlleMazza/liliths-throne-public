@@ -3,6 +3,7 @@ package com.lilithsthrone.world.places;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.lilithsthrone.game.character.effects.Perk;
 import com.lilithsthrone.game.character.npc.dominion.Arthur;
 import com.lilithsthrone.game.character.quests.Quest;
 import com.lilithsthrone.game.character.quests.QuestLine;
@@ -412,7 +413,23 @@ public enum PlaceUpgrade {
 			-0.1f,
 			0.2f,
 			null) {
-		
+		@Override
+		public String getRoomDescription(Cell c) {
+			GenericPlace place = c.getPlace();
+			
+			if(place.getPlaceUpgrades().contains(LILAYA_SLAVE_ROOM_QUADRUPLE)) {
+				return "The four single-sized beds in this room have all been replaced with basic, steel-framed ones, and are equipped with uncomfortable mattress, hard pillows, and thin blankets."
+						+ " Providing this room's occupants with such uncomfortable places to sleep will definitely help them to accept the fact that they're slaves, but at the same time, they're bound to dislike you more...";
+				
+			} else if(place.getPlaceUpgrades().contains(LILAYA_SLAVE_ROOM_DOUBLE)) {
+				return "This room's pair of single-sized beds have been replaced with basic, steel-framed ones, and are equipped with uncomfortable mattress, hard pillows, and thin blankets."
+						+ " Providing this room's occupants with such uncomfortable places to sleep will definitely help them to accept the fact that they're slaves, but at the same time, they're bound to dislike you more...";
+				
+			} else {
+				return "A double size bed, complete with a comfortable mattress, fluffy pillows, and a warm duvet, sits against one side of the room."
+						+ " Providing this room's occupant with such an uncomfortable place to sleep will definitely help them to accept the fact that they're a slave, but at the same time, they're bound to dislike you more...";
+			}
+		}
 		@Override
 		protected Value<Boolean, String> getExtraConditionalAvailability(Cell cell) {
 			if(cell.getPlace().getPlaceUpgrades().contains(LILAYA_SLAVE_ROOM_UPGRADE_BED)) {
@@ -437,20 +454,23 @@ public enum PlaceUpgrade {
 			0.2f,
 			-0.1f,
 			null) {
-		
 		@Override
 		public String getRoomDescription(Cell c) {
 			GenericPlace place = c.getPlace();
 			
-			if(place.getPlaceUpgrades().contains(LILAYA_SLAVE_ROOM_DOUBLE)) {
-				return "This room's pair of single-sized beds have been replaced with a solitary double-sized one, complete with a comfortable mattress, fluffy pillows, and a warm duvet."
-						+ " The pair of slaves assigned to be this room's occupants will have to learn to live with the fact that they now sleep in the same bed...";
+			if(place.getPlaceUpgrades().contains(LILAYA_SLAVE_ROOM_QUADRUPLE)) {
+				return "The four single-sized beds in this room have all been replaced with double-sized ones, and come complete with comfortable mattresses, fluffy pillows, and warm duvets."
+						+ " Providing this room's occupants with such comfortable places to sleep will definitely get them to like you more, although such luxury might make them forget their place...";
+				
+			} else if(place.getPlaceUpgrades().contains(LILAYA_SLAVE_ROOM_DOUBLE)) {
+				return "This room's pair of single-sized beds have been replaced with double-sized ones, and come complete with comfortable mattresses, fluffy pillows, and warm duvets."
+						+ " Providing this room's occupants with such comfortable places to sleep will definitely get them to like you more, although such luxury might make them forget their place...";
+				
 			} else {
 				return "A double size bed, complete with a comfortable mattress, fluffy pillows, and a warm duvet, sits against one side of the room."
 						+ " Providing this room's occupant with such a delightful place to sleep will definitely get them to like you more, although such luxury might make them forget their place...";
 			}
 		}
-		
 		@Override
 		protected Value<Boolean, String> getExtraConditionalAvailability(Cell cell) {
 			if(cell.getPlace().getPlaceUpgrades().contains(LILAYA_SLAVE_ROOM_DOWNGRADE_BED)) {
@@ -728,8 +748,8 @@ public enum PlaceUpgrade {
 			"You've had this office fitted out with the most upmarket furnishings available, which are sure to instill a sense of respect for you in anyone who's assigned to work here.",
 			"You've had this office outfitted with the most luxurious and extravagantly opulent furnishings which money can buy."
 					+ " Each of the four work stations have their own masterfully carved mahogany desk, and fixed to the walls behind them are shelves filled with artisanal leather-bound record books.",
-			500000,
-			-200000,
+			500_000,
+			-200_000,
 			50,
 			0,
 			0.25f,
@@ -1026,10 +1046,19 @@ public enum PlaceUpgrade {
 	}
 
 	public int getInstallCost() {
+		if(Main.game.getPlayer().hasTrait(Perk.JOB_PLAYER_CONSTRUCTION_WORKER, true)) {
+			return installCost/2;
+		}
 		return installCost;
 	}
 
 	public int getRemovalCost() {
+		if(Main.game.getPlayer().hasTrait(Perk.JOB_PLAYER_CONSTRUCTION_WORKER, true)) {
+			if(removalCost>0) {
+				return removalCost;
+			}
+			return Math.max(-(installCost/2), removalCost);
+		}
 		return removalCost;
 	}
 

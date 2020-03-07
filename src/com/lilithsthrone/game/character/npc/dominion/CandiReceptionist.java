@@ -44,6 +44,7 @@ import com.lilithsthrone.game.character.race.RaceStage;
 import com.lilithsthrone.game.character.race.Subspecies;
 import com.lilithsthrone.game.dialogue.DialogueNode;
 import com.lilithsthrone.game.inventory.CharacterInventory;
+import com.lilithsthrone.game.inventory.InventorySlot;
 import com.lilithsthrone.game.inventory.clothing.AbstractClothingType;
 import com.lilithsthrone.game.inventory.clothing.ClothingType;
 import com.lilithsthrone.game.inventory.enchanting.TFEssence;
@@ -87,7 +88,6 @@ public class CandiReceptionist extends NPC {
 		if(Main.isVersionOlderThan(Game.loadingVersion, "0.3.3.8")) {
 			this.setLevel(5);
 			this.setHistory(Occupation.NPC_ENFORCER_PATROL_CONSTABLE);
-			this.resetPerksMap(true);
 		}
 		if(Main.isVersionOlderThan(Game.loadingVersion, "0.3.4.9")) {
 			equipClothing(EquipClothingSetting.getAllClothingSettings());
@@ -96,11 +96,14 @@ public class CandiReceptionist extends NPC {
 			this.setPersonalityTraits(
 					PersonalityTrait.SELFISH);
 		}
+		if(Main.isVersionOlderThan(Game.loadingVersion, "0.3.6")) {
+			this.resetPerksMap(true);
+		}
 	}
 
 	@Override
 	public void setupPerks(boolean autoSelectPerks) {
-		this.addSpecialPerk(Perk.SPECIAL_SLUT);
+		this.addSpecialPerk(Perk.SPECIAL_MEGA_SLUT);
 		
 		PerkManager.initialisePerks(this,
 				Util.newArrayListOfValues(
@@ -233,10 +236,10 @@ public class CandiReceptionist extends NPC {
 			this.setPiercedNose(true);
 			this.setPiercedNavel(true);
 			this.setPiercedVagina(true);
-			this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_EAR_HOOPS, Colour.CLOTHING_GOLD, false), true, this);
-			this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_NOSE_BASIC_RING, Colour.CLOTHING_GOLD, false), true, this);
-			this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_NAVEL_GEM, Colour.CLOTHING_GOLD, false), true, this);
-			this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_VAGINA_BARBELL_RING, Colour.CLOTHING_GOLD, false), true, this);
+			this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_ear_hoops", Colour.CLOTHING_GOLD, false), true, this);
+			this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_nose_ring", Colour.CLOTHING_GOLD, false), true, this);
+			this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_gemstone_barbell", Colour.CLOTHING_GOLD, false), InventorySlot.PIERCING_STOMACH, true, this);
+			this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_ringed_barbell", Colour.CLOTHING_GOLD, false), InventorySlot.PIERCING_VAGINA, true, this);
 		}
 	}
 

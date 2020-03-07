@@ -12,6 +12,7 @@ import com.lilithsthrone.game.PropertyValue;
 import com.lilithsthrone.game.character.CharacterImportSetting;
 import com.lilithsthrone.game.character.EquipClothingSetting;
 import com.lilithsthrone.game.character.GameCharacter;
+import com.lilithsthrone.game.character.attributes.Attribute;
 import com.lilithsthrone.game.character.body.Covering;
 import com.lilithsthrone.game.character.body.types.BodyCoveringType;
 import com.lilithsthrone.game.character.body.valueEnums.AreolaeSize;
@@ -29,7 +30,7 @@ import com.lilithsthrone.game.character.body.valueEnums.Muscle;
 import com.lilithsthrone.game.character.body.valueEnums.NippleSize;
 import com.lilithsthrone.game.character.body.valueEnums.OrificeElasticity;
 import com.lilithsthrone.game.character.body.valueEnums.OrificePlasticity;
-import com.lilithsthrone.game.character.body.valueEnums.PenisGirth;
+import com.lilithsthrone.game.character.body.valueEnums.PenetrationGirth;
 import com.lilithsthrone.game.character.body.valueEnums.TesticleSize;
 import com.lilithsthrone.game.character.body.valueEnums.TongueLength;
 import com.lilithsthrone.game.character.body.valueEnums.Wetness;
@@ -55,6 +56,7 @@ import com.lilithsthrone.game.dialogue.places.dominion.enforcerHQ.BraxOffice;
 import com.lilithsthrone.game.dialogue.responses.Response;
 import com.lilithsthrone.game.inventory.AbstractCoreItem;
 import com.lilithsthrone.game.inventory.CharacterInventory;
+import com.lilithsthrone.game.inventory.InventorySlot;
 import com.lilithsthrone.game.inventory.clothing.AbstractClothing;
 import com.lilithsthrone.game.inventory.clothing.AbstractClothingType;
 import com.lilithsthrone.game.inventory.clothing.ClothingType;
@@ -86,7 +88,10 @@ public class Brax extends NPC {
 				30, Month.NOVEMBER, 27,
 				10, Gender.M_P_MALE,
 				Subspecies.WOLF_MORPH, RaceStage.GREATER, new CharacterInventory(10), WorldType.ENFORCER_HQ, PlaceType.ENFORCER_HQ_BRAXS_OFFICE, true);
-
+		
+		if(!isImported) {
+			this.setAttribute(Attribute.MAJOR_CORRUPTION, 25);
+		}
 	}
 	
 	@Override
@@ -106,12 +111,15 @@ public class Brax extends NPC {
 		}
 		if(Main.isVersionOlderThan(Game.loadingVersion, "0.3.4.9")) {
 			this.equipClothing(EquipClothingSetting.getAllClothingSettings());
-			this.addSpecialPerk(Perk.SPECIAL_DIRTY_MINDED);
 		}
 		if(Main.isVersionOlderThan(Game.loadingVersion, "0.3.5.1")) {
 			this.setPersonalityTraits(
 					PersonalityTrait.CONFIDENT,
 					PersonalityTrait.BRAVE);
+		}
+		if(Main.isVersionOlderThan(Game.loadingVersion, "0.3.6")) {
+			this.addSpecialPerk(Perk.SPECIAL_DIRTY_MINDED);
+			this.setAttribute(Attribute.MAJOR_CORRUPTION, 25);
 		}
 	}
 
@@ -212,7 +220,7 @@ public class Brax extends NPC {
 		
 		// Penis:
 		this.setPenisVirgin(false);
-		this.setPenisGirth(PenisGirth.THREE_THICK);
+		this.setPenisGirth(PenetrationGirth.THREE_THICK);
 		this.setPenisSize(20);
 		this.setTesticleSize(TesticleSize.THREE_LARGE);
 		// Leave cum as normal value
@@ -248,11 +256,11 @@ public class Brax extends NPC {
 				this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.WRIST_BANGLE, Colour.CLOTHING_GOLD, false), true, this);
 
 				this.setPiercedEar(true);
-				this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_EAR_HOOPS, Colour.CLOTHING_GOLD, false), true, this);
+				this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_ear_hoops", Colour.CLOTHING_GOLD, false), true, this);
 				this.setPiercedNose(true);
-				this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_NOSE_BASIC_RING, Colour.CLOTHING_GOLD, false), true, this);
+				this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_nose_ring", Colour.CLOTHING_GOLD, false), true, this);
 				this.setPiercedNavel(true);
-				this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_NAVEL_GEM, Colour.CLOTHING_GOLD, false), true, this);
+				this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_gemstone_barbell", Colour.CLOTHING_GOLD, false), InventorySlot.PIERCING_STOMACH, true, this);
 				
 			} else {
 				this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.GROIN_THONG, Colour.CLOTHING_WHITE, false), true, this);
@@ -279,7 +287,7 @@ public class Brax extends NPC {
 			
 			if(Main.game.getPlayer().hasQuest(QuestLine.MAIN) && !Main.game.getPlayer().isQuestProgressGreaterThan(QuestLine.MAIN, Quest.MAIN_1_C_WOLFS_DEN)) {
 				if(settings.contains(EquipClothingSetting.ADD_WEAPONS)) {
-					this.equipMainWeaponFromNowhere(AbstractWeaponType.generateWeapon(WeaponType.MELEE_CHAOS_EPIC, DamageType.FIRE));
+					this.equipMainWeaponFromNowhere(AbstractWeaponType.generateWeapon("innoxia_crystal_epic", DamageType.FIRE));
 					this.setEssenceCount(TFEssence.ARCANE, 10);
 					this.equipOffhandWeaponFromNowhere(AbstractWeaponType.generateWeapon(WeaponType.getWeaponTypeFromId("dsg_eep_pbweap_pbpistol")));
 				}
@@ -332,7 +340,8 @@ public class Brax extends NPC {
 	public void turnUpdate() {
 		if(this.isSlave() && !this.getOwner().isPlayer() && !Main.game.getCharactersPresent().contains(this)) {
 			if(Main.game.isWorkTime()) {
-				this.returnToHome();
+				this.setLocation(WorldType.ENFORCER_HQ, PlaceType.ENFORCER_HQ_RECEPTION_DESK, true);
+				
 			} else {
 				this.setLocation(WorldType.EMPTY, PlaceType.GENERIC_HOLDING_CELL, false);
 			}
@@ -352,6 +361,11 @@ public class Brax extends NPC {
 		return true;
 	}
 
+	@Override
+	public boolean isImmuneToLevelDrain() {
+		return !this.isSlave();
+	}
+	
 	@Override
 	public SexPace getSexPaceDomPreference(){
 		if(this.isSlave() && this.getOwner().isPlayer()) {
@@ -455,7 +469,7 @@ public class Brax extends NPC {
 //			return super.getPenetrationDescription(initialPenetration, characterPenetrating, penetrationType, characterPenetrated, orifice);
 //		}
 //		if(Math.random()>0.3) {
-//			if(Sex.getSexPositionSlot(characterPenetrated)==SexSlotLyingDown.COWGIRL){
+//			if(Main.sex.getSexPositionSlot(characterPenetrated)==SexSlotLyingDown.COWGIRL){
 //				if(orifice == SexAreaOrifice.VAGINA) {
 //					if(penetrationType == SexAreaPenetration.PENIS && characterPenetrated.equals(this)) {
 //						return UtilText.returnStringAtRandom(

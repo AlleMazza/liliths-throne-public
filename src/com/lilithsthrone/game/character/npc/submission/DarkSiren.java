@@ -37,6 +37,7 @@ import com.lilithsthrone.game.character.body.valueEnums.NippleSize;
 import com.lilithsthrone.game.character.body.valueEnums.OrificeElasticity;
 import com.lilithsthrone.game.character.body.valueEnums.OrificeModifier;
 import com.lilithsthrone.game.character.body.valueEnums.OrificePlasticity;
+import com.lilithsthrone.game.character.body.valueEnums.PenetrationGirth;
 import com.lilithsthrone.game.character.body.valueEnums.TongueLength;
 import com.lilithsthrone.game.character.body.valueEnums.Wetness;
 import com.lilithsthrone.game.character.body.valueEnums.WingSize;
@@ -162,6 +163,9 @@ public class DarkSiren extends NPC {
 			this.setFetishDesire(Fetish.FETISH_PENIS_GIVING, FetishDesire.ONE_DISLIKE);
 			setStartingCombatMoves();
 		}
+		if(Main.isVersionOlderThan(Game.loadingVersion, "0.3.6")) {
+			this.setTailGirth(PenetrationGirth.THREE_THICK);
+		}
 	}
 
 	@Override
@@ -245,6 +249,7 @@ public class DarkSiren extends NPC {
 		this.setSubspeciesOverride(Subspecies.HALF_DEMON);
 		this.setAgeAppearanceDifferenceToAppearAsAge(18);
 		this.setTailType(TailType.DEMON_COMMON);
+		this.setTailGirth(PenetrationGirth.THREE_THICK);
 		this.setWingType(WingType.DEMON_COMMON);
 		this.setWingSize(WingSize.ONE_SMALL.getValue());
 		this.setHornType(HornType.SWEPT_BACK);
@@ -267,7 +272,7 @@ public class DarkSiren extends NPC {
 		this.setSkinCovering(new Covering(BodyCoveringType.PENIS, Colour.SKIN_LIGHT), false);
 		this.setSkinCovering(new Covering(BodyCoveringType.MOUTH, Colour.SKIN_LIGHT), false);
 		
-		this.setSkinCovering(new Covering(BodyCoveringType.HORN, Colour.HORN_DARK_GREY), false);
+		this.setSkinCovering(new Covering(BodyCoveringType.HORN, Colour.COVERING_DARK_GREY), false);
 
 		this.setHairCovering(new Covering(BodyCoveringType.HAIR_DEMON, Colour.COVERING_BLACK), true);
 		this.setHairLength(HairLength.THREE_SHOULDER_LENGTH.getMedianValue());
@@ -345,7 +350,7 @@ public class DarkSiren extends NPC {
 		this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_darkSiren_siren_seal", false), true, this);
 		
 		this.setPiercedEar(true);
-		this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_EAR_BASIC_RING, Colour.CLOTHING_BLACK_STEEL, false), true, this);
+		this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_ear_ring", Colour.CLOTHING_BLACK_STEEL, false), true, this);
 		
 		if(settings.contains(EquipClothingSetting.ADD_WEAPONS)) {
 			this.equipMainWeaponFromNowhere(AbstractWeaponType.generateWeapon(WeaponType.getWeaponTypeFromId("innoxia_scythe_scythe"), DamageType.POISON));
@@ -364,7 +369,7 @@ public class DarkSiren extends NPC {
 		this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_torso_feminine_short_sleeve_shirt", Colour.CLOTHING_PINK_LIGHT, false), true, this);
 		this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_torsoOver_feminine_blazer", Colour.CLOTHING_BLACK, false), true, this);
 		this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.WRIST_WOMENS_WATCH, Colour.CLOTHING_PINK_LIGHT, false), true, this);
-		this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_EAR_BASIC_RING, Colour.CLOTHING_BLACK_STEEL, false), true, this);
+		this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_ear_ring", Colour.CLOTHING_BLACK_STEEL, false), true, this);
 		this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_darkSiren_siren_seal", false), true, this);
 	}
 	
@@ -389,6 +394,22 @@ public class DarkSiren extends NPC {
 					+ " Having been enslaved, she is now legally the property of her mother, Lyssieth, and had been expressly forbidden from leaving her room without supervision."));
 		} else {
 			return "The ruler of Submission's central imp citadel, this 'Dark Siren' is an incredibly powerful arcane user...";
+		}
+	}
+
+	@Override
+	public String getArtworkFolderName() {
+		if(this.getSkinType().getRace()==Race.HUMAN) {
+			if(this.isVisiblyPregnant()) {
+				return "MeraxisPregnant";
+			}
+			return "Meraxis";
+			
+		} else {
+			if(this.isVisiblyPregnant()) {
+				return "MeraxisDemonPregnant";
+			}
+			return "MeraxisDemon";
 		}
 	}
 	

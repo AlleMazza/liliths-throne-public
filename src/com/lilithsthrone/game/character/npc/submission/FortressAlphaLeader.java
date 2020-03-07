@@ -33,7 +33,7 @@ import com.lilithsthrone.game.character.body.valueEnums.Muscle;
 import com.lilithsthrone.game.character.body.valueEnums.NippleSize;
 import com.lilithsthrone.game.character.body.valueEnums.OrificeElasticity;
 import com.lilithsthrone.game.character.body.valueEnums.OrificePlasticity;
-import com.lilithsthrone.game.character.body.valueEnums.PenisGirth;
+import com.lilithsthrone.game.character.body.valueEnums.PenetrationGirth;
 import com.lilithsthrone.game.character.body.valueEnums.TesticleSize;
 import com.lilithsthrone.game.character.body.valueEnums.TongueLength;
 import com.lilithsthrone.game.character.body.valueEnums.Wetness;
@@ -70,7 +70,6 @@ import com.lilithsthrone.game.inventory.item.AbstractItemType;
 import com.lilithsthrone.game.inventory.item.ItemType;
 import com.lilithsthrone.game.inventory.weapon.AbstractWeaponType;
 import com.lilithsthrone.game.inventory.weapon.WeaponType;
-import com.lilithsthrone.game.sex.Sex;
 import com.lilithsthrone.game.sex.SexAreaOrifice;
 import com.lilithsthrone.game.sex.SexAreaPenetration;
 import com.lilithsthrone.game.sex.SexPace;
@@ -197,7 +196,7 @@ public class FortressAlphaLeader extends NPC {
 		this.setEyeCovering(new Covering(BodyCoveringType.EYE_DEMON_COMMON, Colour.EYE_PURPLE));
 		this.setSkinCovering(new Covering(BodyCoveringType.DEMON_COMMON, Colour.SKIN_PALE), true);
 		
-		this.setSkinCovering(new Covering(BodyCoveringType.HORN, Colour.HORN_WHITE), false);
+		this.setSkinCovering(new Covering(BodyCoveringType.HORN, Colour.COVERING_WHITE), false);
 
 		this.setHairCovering(new Covering(BodyCoveringType.HAIR_DEMON, Colour.COVERING_BLACK), true);
 		this.setHairLength(HairLength.THREE_SHOULDER_LENGTH.getMinimumValue());
@@ -241,7 +240,7 @@ public class FortressAlphaLeader extends NPC {
 		
 		// Penis:
 		this.setPenisVirgin(false);
-		this.setPenisGirth(PenisGirth.THREE_THICK);
+		this.setPenisGirth(PenetrationGirth.THREE_THICK);
 		this.setPenisSize(25);
 		this.setTesticleSize(TesticleSize.THREE_LARGE);
 		this.setPenisCumStorage(250);
@@ -278,21 +277,21 @@ public class FortressAlphaLeader extends NPC {
 		
 		if(settings.contains(EquipClothingSetting.ADD_ACCESSORIES)) {
 			this.setPiercedEar(true);
-			this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_EAR_BASIC_RING, Colour.CLOTHING_SILVER, false), true, this);
+			this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_ear_ring", Colour.CLOTHING_SILVER, false), true, this);
 			this.setPiercedLip(true);
-			this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_LIP_RINGS, Colour.CLOTHING_SILVER, false), true, this);
+			this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_lip_double_ring", Colour.CLOTHING_SILVER, false), true, this);
 			this.setPiercedNavel(true);
-			this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_NAVEL_GEM, Colour.CLOTHING_SILVER, false), true, this);
+			this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_gemstone_barbell", Colour.CLOTHING_SILVER, false), InventorySlot.PIERCING_STOMACH, true, this);
 			this.setPiercedNipples(true);
-			this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_NIPPLE_BARS, Colour.CLOTHING_SILVER, false), true, this);
+			this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_basic_barbell_pair", Colour.CLOTHING_SILVER, false), InventorySlot.PIERCING_NIPPLE, true, this);
 			this.setPiercedNose(true);
-			this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_NOSE_BASIC_RING, Colour.CLOTHING_SILVER, false), true, this);
+			this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_nose_ring", Colour.CLOTHING_SILVER, false), true, this);
 			this.setPiercedPenis(true);
-			this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_PENIS_RING, Colour.CLOTHING_SILVER, false), true, this);
+			this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_penis_ring", Colour.CLOTHING_SILVER, false), true, this);
 			this.setPiercedTongue(true);
-			this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_TONGUE_BAR, Colour.CLOTHING_SILVER, false), true, this);
+			this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_basic_barbell", Colour.CLOTHING_SILVER, false), InventorySlot.PIERCING_TONGUE, true, this);
 			this.setPiercedVagina(true);
-			this.equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.PIERCING_VAGINA_BARBELL_RING, Colour.CLOTHING_SILVER, false), true, this);
+			this.equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_piercing_ringed_barbell", Colour.CLOTHING_SILVER, false), InventorySlot.PIERCING_VAGINA, true, this);
 		}
 		
 		if(settings.contains(EquipClothingSetting.ADD_WEAPONS)) {
@@ -367,8 +366,8 @@ public class FortressAlphaLeader extends NPC {
 	@Override
 	public void endSex() {
 		
-		if(Sex.getPostSexDialogue().equals(ImpFortressDialogue.KEEP_AFTER_SEX_DEFEAT)) {
-			if(ImpFortressDialogue.getMainCompanion()!=null && Sex.getAllParticipants().contains(ImpFortressDialogue.getMainCompanion())) {
+		if(Main.sex.getPostSexDialogue().equals(ImpFortressDialogue.KEEP_AFTER_SEX_DEFEAT)) {
+			if(ImpFortressDialogue.getMainCompanion()!=null && Main.sex.getAllParticipants().contains(ImpFortressDialogue.getMainCompanion())) {
 				Main.game.getTextEndStringBuilder().append(UtilText.parseFromXMLFile("places/submission/fortress"+ImpFortressDialogue.getDialogueEncounterId(), "KEEP_AFTER_SEX_DEFEAT_WITH_COMPANION", ImpFortressDialogue.getAllCharacters()));
 			} else {
 				Main.game.getTextEndStringBuilder().append(UtilText.parseFromXMLFile("places/submission/fortress"+ImpFortressDialogue.getDialogueEncounterId(), "KEEP_AFTER_SEX_DEFEAT", ImpFortressDialogue.getAllCharacters()));
@@ -392,7 +391,7 @@ public class FortressAlphaLeader extends NPC {
 	
 	@Override
 	public SexPace getSexPaceDomPreference(){
-		if(Sex.isDom(this)) {
+		if(Main.sex.isDom(this)) {
 			return SexPace.DOM_ROUGH;
 		}
 		return null;
@@ -400,10 +399,10 @@ public class FortressAlphaLeader extends NPC {
 
 	@Override
 	public GameCharacter getPreferredSexTarget() {
-		if(Sex.getLastUsedSexAction(Main.game.getNpc(FortressAlphaLeader.class))!=null
+		if(Main.sex.getLastUsedSexAction(Main.game.getNpc(FortressAlphaLeader.class))!=null
 				&& !FortressAlphaLeaderSA.isBothTargetsUsed()
-				&& (Sex.getLastUsedSexAction(Main.game.getNpc(FortressAlphaLeader.class)).getActionType()==SexActionType.ORGASM
-				|| Sex.getLastUsedSexAction(Main.game.getNpc(FortressAlphaLeader.class)).getActionType()==SexActionType.PREPARE_FOR_PARTNER_ORGASM)) {
+				&& (Main.sex.getLastUsedSexAction(Main.game.getNpc(FortressAlphaLeader.class)).getActionType()==SexActionType.ORGASM
+				|| Main.sex.getLastUsedSexAction(Main.game.getNpc(FortressAlphaLeader.class)).getActionType()==SexActionType.PREPARE_FOR_PARTNER_ORGASM)) {
 			return FortressAlphaLeaderSA.getBlowjobTarget();
 		}
 		return null;
@@ -411,7 +410,7 @@ public class FortressAlphaLeader extends NPC {
 
 	@Override
 	public SexType getForeplayPreference(GameCharacter target) {
-		if(Sex.getSexPositionSlot(this)==SexSlotStanding.STANDING_DOMINANT && this.hasPenis()) {
+		if(Main.sex.getSexPositionSlot(this)==SexSlotStanding.STANDING_DOMINANT && this.hasPenis()) {
 			return new SexType(SexParticipantType.NORMAL, SexAreaPenetration.PENIS, SexAreaOrifice.MOUTH);
 		}
 		
@@ -420,7 +419,7 @@ public class FortressAlphaLeader extends NPC {
 
 	@Override
 	public SexType getMainSexPreference(GameCharacter target) {
-		if(Sex.getSexPositionSlot(this)==SexSlotStanding.STANDING_DOMINANT && this.hasPenis()) {
+		if(Main.sex.getSexPositionSlot(this)==SexSlotStanding.STANDING_DOMINANT && this.hasPenis()) {
 			return new SexType(SexParticipantType.NORMAL, SexAreaPenetration.PENIS, SexAreaOrifice.MOUTH);
 		}
 

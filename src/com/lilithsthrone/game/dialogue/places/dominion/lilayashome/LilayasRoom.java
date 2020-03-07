@@ -369,7 +369,7 @@ public class LilayasRoom {
 						Main.game.getTextEndStringBuilder().append(Main.game.getNpc(Rose.class).incrementAffection(Main.game.getPlayer(), 15));
 						Main.game.getNpc(Rose.class).unequipClothingIntoVoid(Main.game.getNpc(Rose.class).getClothingInSlot(InventorySlot.GROIN), true, Main.game.getNpc(Rose.class));
 						Main.game.getNpc(Rose.class).displaceClothingForAccess(CoverableArea.PENIS, null);
-						Main.game.getNpc(Rose.class).equipClothingFromNowhere(AbstractClothingType.generateClothing(ClothingType.BDSM_PENIS_STRAPON, Colour.CLOTHING_PURPLE_DARK, false), true, Main.game.getNpc(Rose.class));
+						Main.game.getNpc(Rose.class).equipClothingFromNowhere(AbstractClothingType.generateClothing("innoxia_bdsm_penis_strapon", Colour.CLOTHING_PURPLE_DARK, false), true, Main.game.getNpc(Rose.class));
 					}
 				};
 					
@@ -406,7 +406,7 @@ public class LilayasRoom {
 					public void effects() {
 						Main.game.getPlayer().setLocation(WorldType.LILAYAS_HOUSE_FIRST_FLOOR, PlaceType.LILAYA_HOME_ROOM_PLAYER);
 						Main.game.getNpc(Rose.class).setLocation(WorldType.LILAYAS_HOUSE_GROUND_FLOOR, PlaceType.LILAYA_HOME_LAB);
-						Main.game.getNpc(Rose.class).equipClothing(null);
+						Main.game.getNpc(Rose.class).equipClothing();
 						Main.game.setContent(new Response("", "", Main.game.getPlayer().getLocationPlace().getDialogue(false)));
 					}
 				};
