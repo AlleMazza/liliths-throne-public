@@ -32,6 +32,7 @@ import com.lilithsthrone.game.character.body.valueEnums.CoveringModifier;
 import com.lilithsthrone.game.character.body.valueEnums.CoveringPattern;
 import com.lilithsthrone.game.character.body.valueEnums.CupSize;
 import com.lilithsthrone.game.character.body.valueEnums.Height;
+import com.lilithsthrone.game.character.body.valueEnums.HornLength;
 import com.lilithsthrone.game.character.body.valueEnums.LegConfiguration;
 import com.lilithsthrone.game.character.body.valueEnums.Muscle;
 import com.lilithsthrone.game.character.body.valueEnums.WingSize;
@@ -534,7 +535,7 @@ public enum Subspecies {
 					new Value<>(WorldType.SUBMISSION, SubspeciesSpawnRarity.FOUR_COMMON))) {
 		@Override
 		public void applySpeciesChanges(Body body) {
-			body.setHeight(Height.NEGATIVE_TWO_MIMIMUM.getMinimumValue() + Util.random.nextInt(Height.NEGATIVE_TWO_MIMIMUM.getMaximumValue() - Height.NEGATIVE_TWO_MIMIMUM.getMinimumValue()));
+			body.setHeight(Height.NEGATIVE_TWO_MIMIMUM.getRandomValue());
 			body.getPenis().setPenisLength(null, 8+Util.random.nextInt(8)); // 3-7 inches
 			body.getWing().setSize(null,  WingSize.THREE_LARGE.getValue());
 		}
@@ -587,7 +588,7 @@ public enum Subspecies {
 					new Value<>(WorldType.SUBMISSION, SubspeciesSpawnRarity.TWO_RARE))) {
 		@Override
 		public void applySpeciesChanges(Body body) {
-			body.setHeight(Height.NEGATIVE_ONE_TINY.getMinimumValue() + Util.random.nextInt(Height.NEGATIVE_ONE_TINY.getMaximumValue() - Height.NEGATIVE_ONE_TINY.getMinimumValue()));
+			body.setHeight(Height.NEGATIVE_ONE_TINY.getRandomValue());
 			body.getPenis().setPenisLength(null, 8+Util.random.nextInt(12)); // 3-8 inches
 			body.getWing().setSize(null,  WingSize.THREE_LARGE.getValue());
 		}
@@ -1984,6 +1985,7 @@ public enum Subspecies {
 			body.getHorn().setType(null, HornType.HORSE_STRAIGHT);
 			body.getHorn().setHornRows(null, 1);
 			body.getHorn().setHornsPerRow(null, 1);
+			body.getHorn().setHornLength(null, HornLength.TWO_LONG.getMedianValue());
 			body.getWing().setType(null, WingType.NONE);
 		}
 		@Override
@@ -2091,6 +2093,7 @@ public enum Subspecies {
 			body.getHorn().setType(null, HornType.HORSE_STRAIGHT);
 			body.getHorn().setHornRows(null, 1);
 			body.getHorn().setHornsPerRow(null, 1);
+			body.getHorn().setHornLength(null, HornLength.TWO_LONG.getMedianValue());
 			body.setWing(new Wing(WingType.PEGASUS, WingSize.THREE_LARGE.getValue()));
 		}
 		@Override
@@ -2269,6 +2272,7 @@ public enum Subspecies {
 			body.getHorn().setType(null, HornType.HORSE_STRAIGHT);
 			body.getHorn().setHornRows(null, 1);
 			body.getHorn().setHornsPerRow(null, 1);
+			body.getHorn().setHornLength(null, HornLength.TWO_LONG.getMedianValue());
 			body.getLeg().setType(null, LegType.HORSE_MORPH);
 			LegType.HORSE_MORPH.applyLegConfigurationTransformation(body, LegConfiguration.TAUR, true);
 			body.getWing().setType(null, WingType.NONE);
@@ -2330,6 +2334,7 @@ public enum Subspecies {
 			body.getHorn().setType(null, HornType.HORSE_STRAIGHT);
 			body.getHorn().setHornRows(null, 1);
 			body.getHorn().setHornsPerRow(null, 1);
+			body.getHorn().setHornLength(null, HornLength.TWO_LONG.getMedianValue());
 			body.getLeg().setType(null, LegType.HORSE_MORPH);
 			LegType.HORSE_MORPH.applyLegConfigurationTransformation(body, LegConfiguration.TAUR, true);
 			body.setWing(new Wing(WingType.PEGASUS, WingSize.FOUR_HUGE.getValue()));
